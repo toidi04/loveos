@@ -6,9 +6,47 @@ window.addEventListener("load", () => {
 
     }
 
+    createFloatingHearts();
+
     showSplash();
 
 });
+
+function createFloatingHearts(){
+
+    const layer = document.createElement("div");
+
+    layer.className = "hearts-bg";
+
+    const symbols = ["💜","✨","💫"];
+
+    const count = 16;
+
+    for(let i=0;i<count;i++){
+
+        const h = document.createElement("span");
+
+        h.className = "floating-heart";
+
+        h.textContent = symbols[i % symbols.length];
+
+        h.style.left = Math.random()*100 + "vw";
+
+        h.style.animationDuration = (10 + Math.random()*12) + "s";
+
+        h.style.animationDelay = (Math.random()*14) + "s";
+
+        h.style.fontSize = (12 + Math.random()*16) + "px";
+
+        h.style.opacity = 0.15 + Math.random()*0.25;
+
+        layer.appendChild(h);
+
+    }
+
+    document.body.appendChild(layer);
+
+}
 
 function showSplash(){
 
@@ -56,11 +94,21 @@ function showSplash(){
 
 
 
+    const version=document.createElement("div");
+
+    version.className="app-version";
+
+    version.textContent="Love OS v"+LOVE_OS_CONFIG.version;
+
+
+
     screen.appendChild(logo);
 
     screen.appendChild(title);
 
     screen.appendChild(loading);
+
+    screen.appendChild(version);
 
 
 
@@ -72,7 +120,7 @@ function showSplash(){
 
         screen.classList.add("fade-out");
 
-
+        SFX.play("whoosh", 0.4);
 
         setTimeout(function(){
 
@@ -114,46 +162,69 @@ function playMusic(){
 
 function createMusicButton(){
 
-    const btn=document.createElement("button");
+    // اگه دکمه‌ها قبلا ساخته شدن، دوباره نساز
+    // (این باگ باعث میشد با هر بار ورود به intro
+    //  یک دکمه‌ی جدید روی هم اضافه بشه)
+    if(!document.querySelector(".music-btn")){
 
-    btn.className="music-btn";
+        const btn=document.createElement("button");
 
-    btn.textContent="🔊";
+        btn.className="music-btn";
 
-
-
-    btn.onclick=function(){
-
-        if(bgMusic.paused){
-
-            bgMusic.play();
-
-            btn.textContent="🔊";
-
-        }else{
-
-            bgMusic.pause();
-
-            btn.textContent="🔇";
-
-        }
-
-    };
+        btn.textContent="🔊";
 
 
 
-    document.body.appendChild(btn);
+        btn.onclick=function(){
 
-}
+            if(!bgMusic){
+                initMusic();
+            }
 
-window.addEventListener("load", () => {
+            if(bgMusic.paused){
 
-    if ("serviceWorker" in navigator) {
+                bgMusic.play();
 
-        navigator.serviceWorker.register("sw.js");
+                btn.textContent="🔊";
+
+            }else{
+
+                bgMusic.pause();
+
+                btn.textContent="🔇";
+
+            }
+
+        };
+
+
+
+        document.body.appendChild(btn);
 
     }
 
-    startIntro();
+    if(!document.querySelector(".sfx-btn")){
 
-});
+        const sfxBtn=document.createElement("button");
+
+        sfxBtn.className="sfx-btn";
+
+        sfxBtn.textContent="🔔";
+
+        sfxBtn.title="Sound effects";
+
+        sfxBtn.onclick=function(){
+
+            const next = !SFX.isEnabled();
+
+            SFX.setEnabled(next);
+
+            sfxBtn.textContent = next ? "🔔" : "🔕";
+
+        };
+
+        document.body.appendChild(sfxBtn);
+
+    }
+
+}

@@ -2,7 +2,17 @@
 ANNIVERSARY
 =========================================*/
 
+let anniversaryTimer = null;
+
 function startAnniversary(){
+
+    // اگه قبلا این صفحه ساخته شده بود، تایمرِ قبلی رو پاک کن
+    // (قبلا هر بار ورود به این صفحه یک setInterval جدید
+    //  اضافه میشد که هیچوقت پاک نمی‌شد -> نشتی حافظه)
+    if(anniversaryTimer){
+        clearInterval(anniversaryTimer);
+        anniversaryTimer = null;
+    }
 
     const app = document.getElementById("app");
 
@@ -15,6 +25,8 @@ function startAnniversary(){
     app.appendChild(screen);
 
     buildAnniversary(screen);
+
+    SFX.play("whoosh", 0.35);
 
 }
 function buildAnniversary(screen){
@@ -41,7 +53,7 @@ function buildAnniversary(screen){
 
     updateCounter(timer);
 
-    setInterval(function(){
+    anniversaryTimer = setInterval(function(){
 
         updateCounter(timer);
 
@@ -61,7 +73,7 @@ function buildAnniversary(screen){
 
     button.onclick = function(){
 
-        startEnding();
+        startGame();
 
     };
 
@@ -72,7 +84,7 @@ function buildAnniversary(screen){
 }
 function updateCounter(target){
 
-    const start = new Date("2025-12-20T00:00:00");
+    const start = new Date(LOVE_OS_CONFIG.startDate);
 
     const now = new Date();
 

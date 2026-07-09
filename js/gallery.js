@@ -2,29 +2,7 @@
 GALLERY
 =========================================*/
 
-const galleryItems = [
-
-    {
-        image:"assets/images/1.jpg",
-        text:"اینجا متن خاطره اولین عکس قرار می‌گیرد. 💜"
-    },
-
-    {
-        image:"assets/images/2.jpg",
-        text:"اینجا متن خاطره دوم قرار می‌گیرد."
-    },
-
-    {
-        image:"assets/images/3.jpg",
-        text:"اینجا متن خاطره سوم قرار می‌گیرد."
-    },
-
-    {
-        image:"assets/images/4.jpg",
-        text:"اینجا متن خاطره چهارم قرار می‌گیرد."
-    }
-
-];
+const galleryItems = LOVE_OS_CONFIG.galleryItems;
 
 function startGallery(){
 
@@ -39,6 +17,8 @@ function startGallery(){
     app.appendChild(screen);
 
     buildGallery(screen);
+
+    SFX.play("whoosh", 0.35);
 
 }
 function buildGallery(screen){
@@ -71,6 +51,12 @@ function buildGallery(screen){
 
     image.loading = "lazy";
 
+    // تا وقتی عکس واقعی جایگزین نشده، یه placeholder نشون بده
+    image.onerror = function(){
+        image.onerror = null;
+        image.src = LOVE_OS_CONFIG.placeholderImage;
+    };
+
     card.appendChild(image);
 
     card.addEventListener("click",function(){
@@ -85,6 +71,8 @@ function buildGallery(screen){
 }
 
 function openMemory(item){
+
+    SFX.play("open", 0.4);
 
     const overlay = document.createElement("div");
 
@@ -101,6 +89,11 @@ function openMemory(item){
     const img = document.createElement("img");
 
     img.src = item.image;
+
+    img.onerror = function(){
+        img.onerror = null;
+        img.src = LOVE_OS_CONFIG.placeholderImage;
+    };
 
 
 
@@ -122,6 +115,8 @@ function openMemory(item){
 
     typeMemory(item.text,text);
 
+    SFX.play("chime", 0.35);
+
 
 
     overlay.addEventListener("click",function(e){
@@ -140,23 +135,12 @@ function typeMemory(message,target){
 
     let i = 0;
 
+    let done = false;
+
     target.textContent = "";
 
+    function addContinueButton(){
 
-
-    const timer = setInterval(function(){
-
-        target.textContent += message[i];
-
-        i++;
-
-
-
-        if(i>=message.length){
-
-            clearInterval(timer);
-
-        }
         const next = document.createElement("button");
 
         next.textContent = "Continue 💜";
@@ -172,7 +156,40 @@ function typeMemory(message,target){
         };
 
         target.parentElement.appendChild(next);
-        
+
+    }
+
+    const timer = setInterval(function(){
+
+        target.textContent += message[i];
+
+        i++;
+
+        if(i>=message.length){
+
+            finish();
+
+        }
+
     },30);
+
+    function finish(){
+
+        if(done) return;
+
+        done = true;
+
+        clearInterval(timer);
+
+        target.textContent = message;
+
+        // دکمه فقط یک بار، بعد از تموم شدن تایپ ساخته میشه
+        // (قبلا هر ۳۰ میلی‌ثانیه یک دکمه‌ی جدید اضافه میشد)
+        addContinueButton();
+
+    }
+
+    // با کلیک روی متن، تایپ فوری کامل میشه
+    target.addEventListener("click", finish, {once:true});
 
 }

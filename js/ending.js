@@ -16,6 +16,8 @@ function startEnding(){
 
     buildEnding(screen);
 
+    SFX.play("success", 0.5);
+
 }
 
 function buildEnding(screen){
@@ -50,22 +52,15 @@ function buildEnding(screen){
 
 
 
-    typeEnding(
-
-`ممنونم که تا آخر این هدیه با من بودی...
-
-امیدوارم هر بار که این برنامه رو باز می‌کنی،
-یاد لبخندهایی بیفتی که کنار هم ساختیم.
-
-I Love You 💜`
-
-    ,text);
+    typeEnding(LOVE_OS_CONFIG.endingText, text);
 
 }
 
 function typeEnding(message,target){
 
     let i=0;
+
+    let done=false;
 
     target.textContent="";
 
@@ -81,13 +76,28 @@ function typeEnding(message,target){
 
         if(i>=message.length){
 
-            clearInterval(timer);
-
-            showRestart(target.parentElement);
+            finish();
 
         }
 
     },35);
+
+    function finish(){
+
+        if(done) return;
+
+        done=true;
+
+        clearInterval(timer);
+
+        target.textContent = message;
+
+        showRestart(target.parentElement);
+
+    }
+
+    // با کلیک روی متن، تایپ فوری کامل میشه
+    target.addEventListener("click", finish, {once:true});
 
 }
 

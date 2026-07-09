@@ -61,11 +61,43 @@ function openGift(gift){
 
     gift.style.pointerEvents = "none";
 
+    SFX.play("open", 0.55);
+
+    spawnSparkles(gift);
+
     setTimeout(function(){
 
         startLetter();
 
     },800);
+
+}
+
+function spawnSparkles(gift){
+
+    const count = 14;
+
+    for(let i=0;i<count;i++){
+
+        const p = document.createElement("div");
+
+        p.className = "sparkle-particle";
+
+        const angle = (Math.PI*2/count)*i;
+
+        const distance = 70 + Math.random()*40;
+
+        p.style.setProperty("--sx", Math.cos(angle)*distance + "px");
+
+        p.style.setProperty("--sy", Math.sin(angle)*distance + "px");
+
+        p.style.background = i%2===0 ? "#FFD166" : "#CDB4DB";
+
+        gift.appendChild(p);
+
+        setTimeout(()=>p.remove(), 750);
+
+    }
 
 }
 
@@ -89,6 +121,8 @@ function startLetter(){
 
     buildLetter(card);
 
+    SFX.play("chime", 0.45);
+
 }
 
 function buildLetter(card){
@@ -105,23 +139,15 @@ function buildLetter(card){
 
     card.appendChild(text);
 
-    typeLetter(
-
-`سلام عشق من...
-
-اگر الان این صفحه رو می‌بینی،
-
-یعنی این هدیه بالاخره به دستت رسیده...
-
-امیدوارم با دیدنش لبخند بزنی. 💜`
-
-    ,text);
+    typeLetter(LOVE_OS_CONFIG.letterText, text);
 
 }
 
 function typeLetter(message,target){
 
     let i = 0;
+
+    let done = false;
 
     target.textContent = "";
 
@@ -133,13 +159,28 @@ function typeLetter(message,target){
 
         if(i >= message.length){
 
-            clearInterval(timer);
-
-            showLetterButton(target.parentElement);
+            finish();
 
         }
 
     },35);
+
+    function finish(){
+
+        if(done) return;
+
+        done = true;
+
+        clearInterval(timer);
+
+        target.textContent = message;
+
+        showLetterButton(target.parentElement);
+
+    }
+
+    // با کلیک روی متن، تایپ فوری کامل میشه
+    target.addEventListener("click", finish, {once:true});
 
 }
 

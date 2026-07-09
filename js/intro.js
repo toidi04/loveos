@@ -71,6 +71,8 @@ function enterGift(screen,button){
 
     screen.classList.add("fade-out");
 
+    SFX.play("whoosh", 0.4);
+
     setTimeout(function(){
 
         startGift();
