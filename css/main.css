@@ -49,6 +49,8 @@ body{
 
     --purple-light:#B185DB;
 
+    --accent-secondary:#22C55E;
+
     --white:#ffffff;
 
     --text:#EAEAEA;
@@ -367,8 +369,8 @@ GIFT
 
     background:linear-gradient(
         135deg,
-        #7B2CBF,
-        #9D4EDD
+        var(--purple),
+        var(--purple-light)
     );
 
     font-size:4rem;
@@ -1063,7 +1065,7 @@ SPLASH
 
     height:100%;
 
-    background:#B185DB;
+    background:var(--purple-light);
 
     animation:loading 2s linear forwards;
 
@@ -1286,6 +1288,294 @@ GAME — 7 GOLDEN HEARTS
     to{
 
         transform:translateX(-50%) scale(2);
+
+        opacity:0;
+
+    }
+
+}
+
+/* ==========================
+USER SELECT MODAL (Glassmorphism)
+========================== */
+
+.user-select-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:5000;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:24px;
+
+    background:radial-gradient(circle at 50% 30%, rgba(123,44,191,.25), rgba(10,5,18,.85));
+
+    backdrop-filter:blur(4px);
+
+}
+
+.user-select-modal{
+
+    width:100%;
+
+    max-width:360px;
+
+    padding:32px 24px;
+
+    border-radius:28px;
+
+    background:rgba(255,255,255,0.07);
+
+    border:1px solid rgba(255,255,255,0.18);
+
+    backdrop-filter:blur(22px);
+
+    -webkit-backdrop-filter:blur(22px);
+
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
+
+    text-align:center;
+
+}
+
+.user-select-title{
+
+    font-size:1.25rem;
+
+    margin-bottom:26px;
+
+    line-height:1.8;
+
+}
+
+.user-select-cards{
+
+    display:flex;
+
+    gap:16px;
+
+    justify-content:center;
+
+}
+
+.user-card{
+
+    flex:1;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:22px 12px;
+
+    background:rgba(255,255,255,0.05);
+
+    border:1px solid rgba(255,255,255,0.15);
+
+    border-radius:20px;
+
+    color:var(--text);
+
+    transition:transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease, background .25s ease, border-color .25s ease;
+
+}
+
+.user-card-emoji{
+
+    font-size:2.4rem;
+
+}
+
+.user-card-label{
+
+    font-weight:700;
+
+    font-size:1rem;
+
+}
+
+.user-card:hover:not(:disabled){
+
+    transform:translateY(-4px) scale(1.04);
+
+    border-color:var(--purple-light);
+
+    box-shadow:0 10px 26px rgba(123,44,191,.4);
+}
+
+.user-card-selected{
+
+    animation:userCardGlow .55s ease forwards;
+
+    border-color:var(--purple-light);
+
+}
+
+@keyframes userCardGlow{
+
+    0%{
+
+        box-shadow:0 0 0 rgba(177,133,219,0);
+
+        transform:scale(1);
+
+    }
+
+    50%{
+
+        box-shadow:0 0 40px rgba(177,133,219,.9);
+
+        transform:scale(1.12);
+
+    }
+
+    100%{
+
+        box-shadow:0 0 20px rgba(177,133,219,.6);
+
+        transform:scale(1.04);
+
+    }
+
+}
+
+/* ==========================
+HOME SCREEN
+========================== */
+
+.home-screen{
+
+    gap:22px;
+
+}
+
+.home-character{
+
+    width:min(58vw, 220px);
+
+    height:auto;
+
+    image-rendering:pixelated;
+
+    image-rendering:crisp-edges;
+
+    filter:drop-shadow(0 10px 24px rgba(123,44,191,.45));
+}
+
+.breathing{
+
+    animation:breathe 3.2s ease-in-out infinite;
+
+}
+
+@keyframes breathe{
+
+    0%,100%{
+
+        transform:translateY(0) scale(1);
+
+    }
+
+    50%{
+
+        transform:translateY(-4px) scale(1.015);
+
+    }
+
+}
+
+.home-greeting{
+
+    font-size:1.15rem;
+
+    color:var(--purple-light);
+
+    font-weight:600;
+
+}
+
+.adventure-btn{
+
+    position:relative;
+
+    overflow:hidden;
+
+    padding:18px 46px;
+
+    font-size:1.15rem;
+
+    border-radius:24px;
+
+    background:linear-gradient(135deg, var(--purple), var(--purple-light));
+
+    box-shadow:0 10px 30px rgba(123,44,191,.5);
+
+}
+
+.adventure-btn-pressed{
+
+    animation:adventurePress .3s ease forwards;
+
+}
+
+@keyframes adventurePress{
+
+    0%{
+
+        box-shadow:0 10px 30px rgba(123,44,191,.5);
+
+    }
+
+    50%{
+
+        box-shadow:0 0 55px rgba(177,133,219,1);
+
+        transform:scale(.95);
+
+    }
+
+    100%{
+
+        opacity:.85;
+
+        transform:scale(.92);
+
+    }
+
+}
+
+.ripple{
+
+    position:absolute;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.55);
+
+    transform:scale(0);
+
+    animation:rippleAnim .6s ease-out forwards;
+
+    pointer-events:none;
+
+}
+
+@keyframes rippleAnim{
+
+    to{
+
+        transform:scale(2.6);
 
         opacity:0;
 

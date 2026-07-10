@@ -124,7 +124,7 @@ function showSplash(){
 
         setTimeout(function(){
 
-            startIntro();
+            showUserSelect();
 
         },600);
 

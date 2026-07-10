@@ -111,7 +111,7 @@ function showRestart(screen){
 
     button.onclick=function(){
 
-        startIntro();
+        showUserSelect();
 
     };
 

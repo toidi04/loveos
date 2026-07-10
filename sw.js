@@ -1,4 +1,4 @@
-const CACHE_NAME = "love-os-v1-25-0";
+const CACHE_NAME = "love-os-v1-3-0";
 
 const APP_SHELL = [
     "./",
@@ -7,7 +7,9 @@ const APP_SHELL = [
     "css/animation.css",
     "js/config.js",
     "js/sfx.js",
+    "js/theme.js",
     "js/app.js",
+    "js/userselect.js",
     "js/intro.js",
     "js/gift.js",
     "js/gallery.js",
@@ -18,6 +20,8 @@ const APP_SHELL = [
     "assets/icons/icon-192.jpg",
     "assets/icons/icon-512.jpg",
     "assets/music/love.mp3",
+    "assets/characters/asal.png",
+    "assets/characters/yasin.png",
     "assets/sfx/click.wav",
     "assets/sfx/open.wav",
     "assets/sfx/chime.wav",
