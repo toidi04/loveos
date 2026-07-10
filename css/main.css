@@ -952,20 +952,13 @@ ENDING
 
 }
 
-.music-btn,
-.sfx-btn{
+.icon-btn{
 
-    position:fixed;
+    width:48px;
 
-    right:18px;
-
-    width:52px;
-
-    height:52px;
+    height:48px;
 
     border-radius:50%;
-
-    z-index:9999;
 
     font-size:20px;
 
@@ -983,20 +976,7 @@ ENDING
 
 }
 
-.music-btn{
-
-    top:18px;
-
-}
-
-.sfx-btn{
-
-    top:78px;
-
-}
-
-.music-btn:hover,
-.sfx-btn:hover{
+.icon-btn:hover{
 
     transform:scale(1.08);
 
@@ -1004,8 +984,7 @@ ENDING
 
 }
 
-.music-btn:active,
-.sfx-btn:active{
+.icon-btn:active{
 
     transform:scale(0.92);
 
@@ -1581,4 +1560,368 @@ HOME SCREEN
 
     }
 
+}
+
+/* ==========================
+MAIN SCREEN (Hub) — Clash Royale style
+========================== */
+
+.main-screen{
+
+    padding:16px;
+
+    justify-content:space-between;
+
+    gap:0;
+}
+
+.main-topbar{
+
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:4px 6px;
+}
+
+.main-logo{
+
+    font-weight:700;
+
+    font-size:0.95rem;
+
+    opacity:.85;
+
+    letter-spacing:.5px;
+}
+
+.main-character-stage{
+
+    flex:1;
+
+    width:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:4px;
+}
+
+.character-pedestal{
+
+    width:min(58vw, 230px);
+
+    height:34px;
+
+    margin-top:-22px;
+
+    border-radius:50%;
+
+    background:radial-gradient(ellipse at center, var(--purple-light) 0%, rgba(0,0,0,0) 72%);
+
+    opacity:.55;
+
+    filter:blur(1px);
+}
+
+.home-greeting{
+
+    margin-top:10px;
+
+    font-size:1.1rem;
+
+    color:var(--purple-light);
+
+    font-weight:600;
+
+    transition:opacity .25s ease;
+}
+
+.main-bottom-bar{
+
+    width:100%;
+
+    display:flex;
+
+    align-items:flex-end;
+
+    justify-content:center;
+
+    gap:10px;
+
+    padding-bottom:6px;
+}
+
+.hub-slot{
+
+    position:relative;
+
+    width:54px;
+
+    height:54px;
+
+    border-radius:18px;
+
+    background:rgba(255,255,255,0.06);
+
+    border:1px solid rgba(255,255,255,0.12);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:1.4rem;
+
+    filter:grayscale(.4);
+
+    opacity:.55;
+
+    transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+
+.hub-slot:hover{
+
+    transform:translateY(-2px);
+
+    opacity:.7;
+}
+
+.hub-slot:active{
+
+    transform:scale(.92);
+}
+
+.hub-slot-lock{
+
+    position:absolute;
+
+    bottom:-4px;
+
+    right:-4px;
+
+    font-size:.85rem;
+
+    background:var(--card);
+
+    border-radius:50%;
+
+    width:22px;
+
+    height:22px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border:1px solid rgba(255,255,255,0.15);
+}
+
+.coming-soon-tip{
+
+    position:absolute;
+
+    bottom:64px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    background:var(--card);
+
+    border:1px solid rgba(255,255,255,0.15);
+
+    color:var(--text);
+
+    padding:6px 12px;
+
+    border-radius:12px;
+
+    font-size:.75rem;
+
+    white-space:nowrap;
+
+    animation:fadeIn .2s ease forwards;
+
+    box-shadow:0 6px 16px rgba(0,0,0,.4);
+}
+
+/* دکمه‌ی ماجراجویی کمی از بقیه‌ی ردیف بالاتره، مثل دکمه‌ی
+   Battle توی بازی‌های موبایل */
+.main-bottom-bar .adventure-btn{
+
+    margin:0 4px;
+
+    transform:translateY(-14px);
+
+    padding:16px 30px;
+
+    font-size:1.05rem;
+}
+
+/* ==========================
+SETTINGS PANEL
+========================== */
+
+.settings-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:6000;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:24px;
+
+    background:radial-gradient(circle at 50% 30%, rgba(123,44,191,.2), rgba(10,5,18,.85));
+
+    backdrop-filter:blur(4px);
+}
+
+.settings-panel{
+
+    width:100%;
+
+    max-width:360px;
+
+    padding:28px 24px;
+
+    border-radius:26px;
+
+    background:rgba(255,255,255,0.07);
+
+    border:1px solid rgba(255,255,255,0.18);
+
+    backdrop-filter:blur(22px);
+
+    -webkit-backdrop-filter:blur(22px);
+
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:16px;
+}
+
+.settings-row{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:10px 4px;
+
+    border-bottom:1px solid rgba(255,255,255,0.08);
+}
+
+.settings-subtitle{
+
+    font-size:.9rem;
+
+    color:var(--purple-light);
+
+    font-weight:600;
+
+    margin-top:4px;
+}
+
+.settings-switch-cards{
+
+    gap:12px;
+}
+
+.settings-switch-cards .user-card{
+
+    padding:14px 8px;
+}
+
+.user-card-active{
+
+    border-color:var(--purple-light);
+
+    box-shadow:0 0 16px rgba(177,133,219,.5);
+}
+
+.settings-close-btn{
+
+    margin-top:4px;
+}
+
+.toggle-switch{
+
+    position:relative;
+
+    width:52px;
+
+    height:28px;
+
+    border-radius:999px;
+
+    background:rgba(255,255,255,0.15);
+
+    border:1px solid rgba(255,255,255,0.2);
+
+    transition:background .25s ease;
+
+    padding:0;
+
+    box-shadow:none;
+}
+
+.toggle-switch:hover{
+
+    transform:none;
+
+    box-shadow:none;
+}
+
+.toggle-knob{
+
+    position:absolute;
+
+    top:2px;
+
+    right:3px;
+
+    width:22px;
+
+    height:22px;
+
+    border-radius:50%;
+
+    background:#fff;
+
+    transition:transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+
+.toggle-on{
+
+    background:var(--purple);
+}
+
+.toggle-on .toggle-knob{
+
+    transform:translateX(-24px);
 }

@@ -1,11 +1,15 @@
 /*=========================================
-  USER SELECT + HOME
+  USER SELECT + MAIN SCREEN
   پنجره‌ی انتخاب کاربر (عسل/یاسین) با طراحی
-  Glassmorphism، و صفحه‌ی خانه با شخصیت
-  پیکسل‌آرت و دکمه‌ی ورود به برنامه.
+  Glassmorphism، و صفحه‌ی اصلی (Main/Hub) به
+  سبک بازی‌های موبایل مدرن با شخصیت پیکسل‌آرت،
+  دکمه‌ی ورود به برنامه، آیتم‌های قفل برای
+  آینده، و پنل تنظیمات (موزیک/افکت/تعویض کاربر).
   انتخاب کاربر هیچ‌جا ذخیره نمی‌شه؛ هر بار
   اجرای برنامه دوباره پرسیده می‌شه.
 =========================================*/
+
+let currentUser = null;
 
 function showUserSelect(){
 
@@ -74,13 +78,15 @@ function selectUser(userKey, card, overlay){
 
     applyTheme(userKey);
 
+    currentUser = userKey;
+
     setTimeout(()=>{
 
         overlay.classList.add("fade-out");
 
         setTimeout(()=>{
 
-            showHome(userKey);
+            showMainScreen(userKey);
 
         },500);
 
@@ -88,7 +94,13 @@ function selectUser(userKey, card, overlay){
 
 }
 
-function showHome(userKey){
+/*=========================================
+  MAIN SCREEN (Hub)
+=========================================*/
+
+function showMainScreen(userKey){
+
+    currentUser = userKey;
 
     const app = document.getElementById("app");
 
@@ -98,11 +110,45 @@ function showHome(userKey){
 
     const screen = document.createElement("section");
 
-    screen.className = "screen home-screen fade-in";
+    screen.className = "screen main-screen fade-in";
+
+    // ---------- top bar ----------
+    const topbar = document.createElement("div");
+
+    topbar.className = "main-topbar";
+
+    const settingsBtn = document.createElement("button");
+
+    settingsBtn.className = "icon-btn settings-btn";
+
+    settingsBtn.innerHTML = "⚙️";
+
+    settingsBtn.onclick = ()=> openSettings(screen);
+
+    const logo = document.createElement("div");
+
+    logo.className = "main-logo";
+
+    logo.textContent = "Love OS 💜";
+
+    topbar.appendChild(settingsBtn);
+
+    topbar.appendChild(logo);
+
+    // ---------- character stage ----------
+    const stage = document.createElement("div");
+
+    stage.className = "main-character-stage";
+
+    const pedestal = document.createElement("div");
+
+    pedestal.className = "character-pedestal";
 
     const charImg = document.createElement("img");
 
     charImg.className = "home-character breathing";
+
+    charImg.id = "mainCharacterImg";
 
     charImg.src = `assets/characters/${userKey}.png`;
 
@@ -112,7 +158,24 @@ function showHome(userKey){
 
     greeting.className = "home-greeting";
 
+    greeting.id = "mainGreeting";
+
     greeting.textContent = `سلام ${theme.name} 💜`;
+
+    stage.appendChild(charImg);
+
+    stage.appendChild(pedestal);
+
+    stage.appendChild(greeting);
+
+    // ---------- bottom hub bar ----------
+    const bottomBar = document.createElement("div");
+
+    bottomBar.className = "main-bottom-bar";
+
+    const lockedLeft = buildLockedSlot("🎨");
+
+    const lockedLeft2 = buildLockedSlot("🏆");
 
     const startBtn = document.createElement("button");
 
@@ -144,17 +207,272 @@ function showHome(userKey){
 
     });
 
-    screen.appendChild(charImg);
+    const lockedRight = buildLockedSlot("🎁");
 
-    screen.appendChild(greeting);
+    const lockedRight2 = buildLockedSlot("🖼️");
 
-    screen.appendChild(startBtn);
+    bottomBar.appendChild(lockedLeft);
+
+    bottomBar.appendChild(lockedLeft2);
+
+    bottomBar.appendChild(startBtn);
+
+    bottomBar.appendChild(lockedRight);
+
+    bottomBar.appendChild(lockedRight2);
+
+    screen.appendChild(topbar);
+
+    screen.appendChild(stage);
+
+    screen.appendChild(bottomBar);
 
     app.appendChild(screen);
 
-    createMusicButton();
-
     playMusic();
+
+}
+
+// یه آیتم قفل‌شده برای فضاهای آینده‌ی برنامه
+// (فعلا فقط دکمه‌ی ماجراجویی بازه)
+function buildLockedSlot(emoji){
+
+    const slot = document.createElement("button");
+
+    slot.className = "hub-slot hub-slot-locked";
+
+    slot.innerHTML = `
+        <span class="hub-slot-emoji">${emoji}</span>
+        <span class="hub-slot-lock">🔒</span>
+    `;
+
+    slot.onclick = ()=> showComingSoon(slot);
+
+    return slot;
+
+}
+
+function showComingSoon(slot){
+
+    if(slot.querySelector(".coming-soon-tip")) return;
+
+    SFX.play("click", 0.3);
+
+    slot.classList.remove("shake");
+
+    void slot.offsetWidth;
+
+    slot.classList.add("shake");
+
+    const tip = document.createElement("div");
+
+    tip.className = "coming-soon-tip";
+
+    tip.textContent = "به‌زودی 💜";
+
+    slot.appendChild(tip);
+
+    setTimeout(()=>tip.remove(), 1400);
+
+}
+
+/*=========================================
+  SETTINGS PANEL
+  موزیک، افکت صدا و تعویض کاراکتر
+=========================================*/
+
+function openSettings(mainScreen){
+
+    if(document.querySelector(".settings-overlay")) return;
+
+    const overlay = document.createElement("div");
+
+    overlay.className = "settings-overlay fade-in";
+
+    const panel = document.createElement("div");
+
+    panel.className = "settings-panel";
+
+    const title = document.createElement("h2");
+
+    title.className = "user-select-title";
+
+    title.textContent = "تنظیمات ⚙️";
+
+    // ---------- music toggle ----------
+    const musicRow = buildToggleRow(
+        "موزیک پس‌زمینه 🎵",
+        !bgMusic || !bgMusic.paused,
+        (nextOn)=>{
+            if(!bgMusic) initMusic();
+            if(nextOn){ bgMusic.play(); } else { bgMusic.pause(); }
+        }
+    );
+
+    // ---------- sfx toggle ----------
+    const sfxRow = buildToggleRow(
+        "افکت‌های صوتی 🔔",
+        SFX.isEnabled(),
+        (nextOn)=>{
+            SFX.setEnabled(nextOn);
+        }
+    );
+
+    // ---------- character switch ----------
+    const switchTitle = document.createElement("p");
+
+    switchTitle.className = "settings-subtitle";
+
+    switchTitle.textContent = "تغییر شخصیت";
+
+    const switchCards = document.createElement("div");
+
+    switchCards.className = "user-select-cards settings-switch-cards";
+
+    const options = [
+        { key:"asal",  label:"عسل",   emoji:"🔮" },
+        { key:"yasin", label:"یاسین", emoji:"⭐" }
+    ];
+
+    options.forEach(opt=>{
+
+        const card = document.createElement("button");
+
+        card.className = "user-card";
+
+        if(opt.key === currentUser) card.classList.add("user-card-active");
+
+        card.innerHTML = `
+            <span class="user-card-emoji">${opt.emoji}</span>
+            <span class="user-card-label">${opt.label}</span>
+        `;
+
+        card.onclick = ()=>{
+
+            if(opt.key === currentUser){
+
+                closeSettings(overlay);
+
+                return;
+
+            }
+
+            SFX.play("chime", 0.45);
+
+            applyTheme(opt.key);
+
+            currentUser = opt.key;
+
+            const img = document.getElementById("mainCharacterImg");
+
+            const greetingEl = document.getElementById("mainGreeting");
+
+            if(img){
+
+                img.classList.add("fade-out");
+
+                setTimeout(()=>{
+
+                    img.src = `assets/characters/${opt.key}.png`;
+
+                    img.alt = THEMES[opt.key].name;
+
+                    img.classList.remove("fade-out");
+
+                },250);
+
+            }
+
+            if(greetingEl){
+
+                greetingEl.textContent = `سلام ${THEMES[opt.key].name} 💜`;
+
+            }
+
+            closeSettings(overlay);
+
+        };
+
+        switchCards.appendChild(card);
+
+    });
+
+    const closeBtn = document.createElement("button");
+
+    closeBtn.className = "game-skip-btn settings-close-btn";
+
+    closeBtn.textContent = "بستن";
+
+    closeBtn.onclick = ()=> closeSettings(overlay);
+
+    panel.appendChild(title);
+
+    panel.appendChild(musicRow);
+
+    panel.appendChild(sfxRow);
+
+    panel.appendChild(switchTitle);
+
+    panel.appendChild(switchCards);
+
+    panel.appendChild(closeBtn);
+
+    overlay.appendChild(panel);
+
+    overlay.addEventListener("click", (e)=>{
+
+        if(e.target === overlay) closeSettings(overlay);
+
+    });
+
+    document.getElementById("app").appendChild(overlay);
+
+}
+
+function closeSettings(overlay){
+
+    overlay.classList.add("fade-out");
+
+    setTimeout(()=>overlay.remove(), 400);
+
+}
+
+// یه ردیف تنظیمات با کلید سوییچ (Toggle Switch)
+function buildToggleRow(label, initialOn, onChange){
+
+    const row = document.createElement("div");
+
+    row.className = "settings-row";
+
+    const labelEl = document.createElement("span");
+
+    labelEl.textContent = label;
+
+    const toggle = document.createElement("button");
+
+    toggle.className = "toggle-switch" + (initialOn ? " toggle-on" : "");
+
+    toggle.innerHTML = `<span class="toggle-knob"></span>`;
+
+    let on = initialOn;
+
+    toggle.onclick = ()=>{
+
+        on = !on;
+
+        toggle.classList.toggle("toggle-on", on);
+
+        SFX.play("click", 0.3);
+
+        onChange(on);
+
+    };
+
+    row.appendChild(labelEl);
+
+    row.appendChild(toggle);
+
+    return row;
 
 }
 

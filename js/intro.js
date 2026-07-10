@@ -16,7 +16,9 @@ function startIntro(){
 
     buildIntro(screen);
 
-    createMusicButton();
+    // توجه: این صفحه دیگه در مسیر اصلی برنامه صدا زده نمی‌شه؛
+    // صفحه‌ی اصلی (main-screen) جایگزینش شده. فایل رو برای
+    // حفظ ساختار پروژه نگه داشتیم.
 
 }
 function buildIntro(screen){

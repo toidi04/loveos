@@ -1,4 +1,4 @@
-const CACHE_NAME = "love-os-v1-3-0";
+const CACHE_NAME = "love-os-v1-30-5";
 
 const APP_SHELL = [
     "./",
@@ -17,9 +17,6 @@ const APP_SHELL = [
     "js/game.js",
     "js/ending.js",
     "manifest.json",
-    "assets/icons/icon-192.jpg",
-    "assets/icons/icon-512.jpg",
-    "assets/music/love.mp3",
     "assets/characters/asal.png",
     "assets/characters/yasin.png",
     "assets/sfx/click.wav",
@@ -33,10 +30,33 @@ const APP_SHELL = [
     "assets/images/placeholder.svg"
 ];
 
+// فایل‌هایی که ممکنه هنوز اضافه نشده باشن (مثل آیکون‌ها،
+// موزیک، عکس‌های گالری) - اختیاری، نبودشون نباید کل
+// نصب سرویس‌ورکر رو خراب کنه
+const OPTIONAL_SHELL = [
+    "assets/icons/icon-192.jpg",
+    "assets/icons/icon-512.jpg",
+    "assets/music/love.mp3"
+];
+
 self.addEventListener("install", event => {
 
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL))
+
+        caches.open(CACHE_NAME).then(async cache => {
+
+            await cache.addAll(APP_SHELL);
+
+            // هر فایل اختیاری رو جدا امتحان می‌کنیم؛ اگه یکی
+            // نبود، بقیه‌ی نصب رو خراب نمی‌کنه
+            await Promise.allSettled(
+                OPTIONAL_SHELL.map(url =>
+                    cache.add(url).catch(()=>{})
+                )
+            );
+
+        })
+
     );
 
     self.skipWaiting();
