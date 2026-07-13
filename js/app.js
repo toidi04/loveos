@@ -62,13 +62,23 @@ function showSplash(){
 
 
 
+    const logoWrap=document.createElement("div");
+
+    logoWrap.className="splash-logo-wrap";
+
+    const glow=document.createElement("div");
+
+    glow.className="splash-glow";
+
     const logo=document.createElement("div");
 
     logo.className="splash-logo heartbeat";
 
     logo.textContent="💜";
 
+    logoWrap.appendChild(glow);
 
+    logoWrap.appendChild(logo);
 
     const title=document.createElement("h1");
 
@@ -76,23 +86,21 @@ function showSplash(){
 
     title.textContent="Love OS";
 
+    const status=document.createElement("p");
 
+    status.className="splash-status";
+
+    status.textContent="در حال آماده‌سازی...";
 
     const loading=document.createElement("div");
 
     loading.className="loading";
 
-
-
     const bar=document.createElement("div");
 
     bar.className="loading-bar";
 
-
-
     loading.appendChild(bar);
-
-
 
     const version=document.createElement("div");
 
@@ -100,13 +108,13 @@ function showSplash(){
 
     version.textContent="Love OS v"+LOVE_OS_CONFIG.version;
 
-
-
-    screen.appendChild(logo);
+    screen.appendChild(logoWrap);
 
     screen.appendChild(title);
 
     screen.appendChild(loading);
+
+    screen.appendChild(status);
 
     screen.appendChild(version);
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = "love-os-v1-30-5";
+const CACHE_NAME = "love-os-v1-34-0";
 
 const APP_SHELL = [
     "./",
@@ -18,7 +18,15 @@ const APP_SHELL = [
     "js/ending.js",
     "manifest.json",
     "assets/characters/asal.png",
+    "assets/characters/asal-eyes.png",
+    "assets/characters/asal-hair.png",
+    "assets/characters/asal-item.png",
     "assets/characters/yasin.png",
+    "assets/characters/yasin-eyes.png",
+    "assets/characters/yasin-hair.png",
+    "assets/characters/yasin-item.png",
+    "assets/icons/icon-192.jpg",
+    "assets/icons/icon-512.jpg",
     "assets/sfx/click.wav",
     "assets/sfx/open.wav",
     "assets/sfx/chime.wav",
@@ -34,8 +42,6 @@ const APP_SHELL = [
 // موزیک، عکس‌های گالری) - اختیاری، نبودشون نباید کل
 // نصب سرویس‌ورکر رو خراب کنه
 const OPTIONAL_SHELL = [
-    "assets/icons/icon-192.jpg",
-    "assets/icons/icon-512.jpg",
     "assets/music/love.mp3"
 ];
 

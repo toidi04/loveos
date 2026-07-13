@@ -11,6 +11,12 @@
 
 let currentUser = null;
 
+// نقطه‌ی چرخش آیتم (گل/گیتار) که با دست هرکاراکتر هماهنگه
+const ITEM_PIVOT = {
+    yasin: "70% 57%",
+    asal:  "52% 45%"
+};
+
 function showUserSelect(){
 
     const app = document.getElementById("app");
@@ -144,15 +150,61 @@ function showMainScreen(userKey){
 
     pedestal.className = "character-pedestal";
 
+    const charWrap = document.createElement("div");
+
+    charWrap.className = "character-wrap breathing";
+
+    charWrap.id = "mainCharacterWrap";
+
     const charImg = document.createElement("img");
 
-    charImg.className = "home-character breathing";
+    charImg.className = "home-character";
 
     charImg.id = "mainCharacterImg";
 
     charImg.src = `assets/characters/${userKey}.png`;
 
     charImg.alt = theme.name;
+
+    const eyesImg = document.createElement("img");
+
+    eyesImg.className = "character-eyes";
+
+    eyesImg.id = "mainCharacterEyes";
+
+    eyesImg.src = `assets/characters/${userKey}-eyes.png`;
+
+    eyesImg.alt = "";
+
+    const itemImg = document.createElement("img");
+
+    itemImg.className = "character-item";
+
+    itemImg.id = "mainCharacterItem";
+
+    itemImg.src = `assets/characters/${userKey}-item.png`;
+
+    itemImg.alt = "";
+
+    itemImg.style.transformOrigin = ITEM_PIVOT[userKey] || "60% 55%";
+
+    const hairImg = document.createElement("img");
+
+    hairImg.className = "character-hair";
+
+    hairImg.id = "mainCharacterHair";
+
+    hairImg.src = `assets/characters/${userKey}-hair.png`;
+
+    hairImg.alt = "";
+
+    charWrap.appendChild(charImg);
+
+    charWrap.appendChild(itemImg);
+
+    charWrap.appendChild(hairImg);
+
+    charWrap.appendChild(eyesImg);
 
     const greeting = document.createElement("p");
 
@@ -162,7 +214,7 @@ function showMainScreen(userKey){
 
     greeting.textContent = `سلام ${theme.name} 💜`;
 
-    stage.appendChild(charImg);
+    stage.appendChild(charWrap);
 
     stage.appendChild(pedestal);
 
@@ -173,9 +225,7 @@ function showMainScreen(userKey){
 
     bottomBar.className = "main-bottom-bar";
 
-    const lockedLeft = buildLockedSlot("🎨");
-
-    const lockedLeft2 = buildLockedSlot("🏆");
+    const lockedLeft = buildLockedSlot("🏆");
 
     const startBtn = document.createElement("button");
 
@@ -209,17 +259,11 @@ function showMainScreen(userKey){
 
     const lockedRight = buildLockedSlot("🎁");
 
-    const lockedRight2 = buildLockedSlot("🖼️");
-
     bottomBar.appendChild(lockedLeft);
-
-    bottomBar.appendChild(lockedLeft2);
 
     bottomBar.appendChild(startBtn);
 
     bottomBar.appendChild(lockedRight);
-
-    bottomBar.appendChild(lockedRight2);
 
     screen.appendChild(topbar);
 
@@ -365,11 +409,23 @@ function openSettings(mainScreen){
 
             const img = document.getElementById("mainCharacterImg");
 
+            const eyesImg = document.getElementById("mainCharacterEyes");
+
+            const itemImg = document.getElementById("mainCharacterItem");
+
+            const hairImg = document.getElementById("mainCharacterHair");
+
             const greetingEl = document.getElementById("mainGreeting");
 
             if(img){
 
-                img.classList.add("fade-out");
+                img.classList.add("char-fade-out");
+
+                if(eyesImg) eyesImg.classList.add("char-fade-out");
+
+                if(itemImg) itemImg.classList.add("char-fade-out");
+
+                if(hairImg) hairImg.classList.add("char-fade-out");
 
                 setTimeout(()=>{
 
@@ -377,7 +433,33 @@ function openSettings(mainScreen){
 
                     img.alt = THEMES[opt.key].name;
 
-                    img.classList.remove("fade-out");
+                    img.classList.remove("char-fade-out");
+
+                    if(eyesImg){
+
+                        eyesImg.src = `assets/characters/${opt.key}-eyes.png`;
+
+                        eyesImg.classList.remove("char-fade-out");
+
+                    }
+
+                    if(itemImg){
+
+                        itemImg.src = `assets/characters/${opt.key}-item.png`;
+
+                        itemImg.style.transformOrigin = ITEM_PIVOT[opt.key] || "60% 55%";
+
+                        itemImg.classList.remove("char-fade-out");
+
+                    }
+
+                    if(hairImg){
+
+                        hairImg.src = `assets/characters/${opt.key}-hair.png`;
+
+                        hairImg.classList.remove("char-fade-out");
+
+                    }
 
                 },250);
 

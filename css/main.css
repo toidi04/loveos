@@ -67,13 +67,9 @@ body{
 
     width:100vw;
 
-    min-height:100vh;
-
     display:flex;
 
     justify-content:center;
-
-    padding:20px;
 
     position:relative;
 
@@ -93,6 +89,8 @@ body{
 
     min-height:100vh;
 
+    min-height:100dvh;
+
     display:flex;
 
     flex-direction:column;
@@ -104,6 +102,8 @@ body{
     text-align:center;
 
     padding:24px;
+
+    box-sizing:border-box;
 
 }
 
@@ -141,6 +141,10 @@ p{
 
 button{
 
+    position:relative;
+
+    overflow:hidden;
+
     border:none;
 
     outline:none;
@@ -155,11 +159,52 @@ button{
 
     font-weight:600;
 
-    background:var(--purple);
+    letter-spacing:.3px;
+
+    background:linear-gradient(155deg, var(--purple-light) 0%, var(--purple) 55%, var(--purple) 100%);
 
     color:white;
 
+    box-shadow:
+
+        0 6px 18px rgba(0,0,0,.35),
+
+        inset 0 1px 0 rgba(255,255,255,.35),
+
+        inset 0 -3px 6px rgba(0,0,0,.2);
+
     transition:transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease, background .25s ease;
+
+}
+
+/* جلوه‌ی درخشش که موقع هاور از روی دکمه رد می‌شه */
+button::after{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+
+    left:-60%;
+
+    width:40%;
+
+    height:100%;
+
+    background:linear-gradient(120deg, transparent, rgba(255,255,255,.35), transparent);
+
+    transform:skewX(-20deg);
+
+    transition:left .55s ease;
+
+    pointer-events:none;
+
+}
+
+button:hover:not(:disabled)::after{
+
+    left:130%;
 
 }
 
@@ -173,7 +218,13 @@ button:hover:not(:disabled){
 
     transform:translateY(-3px);
 
-    box-shadow:0 8px 20px rgba(123,44,191,.45);
+    box-shadow:
+
+        0 10px 24px rgba(123,44,191,.5),
+
+        inset 0 1px 0 rgba(255,255,255,.4),
+
+        inset 0 -3px 6px rgba(0,0,0,.2);
 
 }
 
@@ -659,6 +710,8 @@ GALLERY
 
     height:100vh;
 
+    height:100dvh;
+
     display:flex;
 
     flex-direction:column;
@@ -905,6 +958,8 @@ MEMORY
 
     gap:20px;
 
+    direction:ltr;
+
 }
 
 .love-counter div{
@@ -954,40 +1009,66 @@ ENDING
 
 .icon-btn{
 
-    width:48px;
+    width:50px;
 
-    height:48px;
+    height:50px;
 
-    border-radius:50%;
+    border-radius:16px;
 
-    font-size:20px;
+    font-size:22px;
 
-    border:1px solid rgba(255,255,255,0.15);
+    display:flex;
 
-    background:rgba(30,16,49,0.65);
+    align-items:center;
 
-    backdrop-filter:blur(6px);
+    justify-content:center;
 
-    box-shadow:0 4px 18px rgba(0,0,0,0.35);
+    padding:0;
 
-    transition:transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease, background .2s ease;
+    background:linear-gradient(155deg, rgba(255,255,255,.16), rgba(255,255,255,.03));
 
-    cursor:pointer;
+    border:1px solid rgba(255,255,255,.22);
 
+    backdrop-filter:blur(10px);
+
+    -webkit-backdrop-filter:blur(10px);
+
+    box-shadow:
+
+        0 8px 22px rgba(0,0,0,.4),
+
+        inset 0 1px 0 rgba(255,255,255,.25),
+
+        0 0 0 0 rgba(177,133,219,0);
+
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .35s ease, border-color .35s ease;
+}
+
+.icon-btn::after{
+
+    /* حلقه‌ی درخشش رو برای این دکمه غیرفعال می‌کنیم، چون
+       جلوه‌ی چرخشی مخصوص خودش رو داره */
+    display:none;
 }
 
 .icon-btn:hover{
 
-    transform:scale(1.08);
+    transform:translateY(-2px) rotate(35deg) scale(1.06);
 
-    box-shadow:0 6px 22px rgba(123,44,191,0.45);
+    border-color:var(--purple-light);
 
+    box-shadow:
+
+        0 10px 26px rgba(0,0,0,.45),
+
+        inset 0 1px 0 rgba(255,255,255,.3),
+
+        0 0 22px 2px rgba(177,133,219,.55);
 }
 
 .icon-btn:active{
 
-    transform:scale(0.92);
-
+    transform:scale(.9) rotate(10deg);
 }
 
 /* ==========================
@@ -1004,9 +1085,51 @@ SPLASH
 
 
 
+.splash-logo-wrap{
+
+    position:relative;
+
+    width:140px;
+
+    height:140px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+.splash-glow{
+
+    position:absolute;
+
+    inset:0;
+
+    border-radius:50%;
+
+    background:radial-gradient(circle, var(--purple-light) 0%, rgba(177,133,219,0) 70%);
+
+    opacity:.55;
+
+    animation:splashGlowPulse 2.4s ease-in-out infinite;
+
+}
+
+@keyframes splashGlowPulse{
+
+    0%,100%{ transform:scale(0.85); opacity:.4; }
+    50%{ transform:scale(1.15); opacity:.7; }
+}
+
 .splash-logo{
 
+    position:relative;
+
     font-size:90px;
+
+    z-index:1;
 
 }
 
@@ -1020,19 +1143,35 @@ SPLASH
 
 }
 
+.splash-status{
+
+    color:rgba(255,255,255,0.45);
+
+    font-size:.8rem;
+
+    margin-top:-14px;
+
+}
+
 
 
 .loading{
 
-    width:220px;
+    width:240px;
 
-    height:8px;
+    height:10px;
 
-    background:#2b1a40;
+    background:#241536;
 
     border-radius:999px;
 
     overflow:hidden;
+
+    direction:ltr;
+
+    box-shadow:inset 0 2px 4px rgba(0,0,0,.4);
+
+    border:1px solid rgba(255,255,255,0.08);
 
 }
 
@@ -1044,9 +1183,11 @@ SPLASH
 
     height:100%;
 
-    background:var(--purple-light);
+    background:linear-gradient(90deg, var(--purple), var(--purple-light));
 
-    animation:loading 2s linear forwards;
+    animation:loading 2s ease-in-out forwards;
+
+    box-shadow:0 0 10px 1px rgba(177,133,219,.6);
 
 }
 
@@ -1439,17 +1580,120 @@ HOME SCREEN
 
 }
 
+.character-wrap{
+
+    position:relative;
+
+    width:min(58vw, 220px, 28vh);
+
+    line-height:0;
+}
+
 .home-character{
 
-    width:min(58vw, 220px);
+    width:100%;
 
     height:auto;
+
+    display:block;
 
     image-rendering:pixelated;
 
     image-rendering:crisp-edges;
 
     filter:drop-shadow(0 10px 24px rgba(123,44,191,.45));
+}
+
+.character-item{
+
+    position:absolute;
+
+    inset:0;
+
+    width:100%;
+
+    height:100%;
+
+    image-rendering:pixelated;
+
+    image-rendering:crisp-edges;
+
+    animation:itemSway 4.5s ease-in-out infinite;
+}
+
+@keyframes itemSway{
+
+    0%,100%{ transform:rotate(0deg); }
+    50%{ transform:rotate(3deg); }
+}
+
+.character-hair{
+
+    position:absolute;
+
+    inset:0;
+
+    width:100%;
+
+    height:100%;
+
+    image-rendering:pixelated;
+
+    image-rendering:crisp-edges;
+
+    transform-origin:50% 8%;
+
+    animation:hairSway 5.5s ease-in-out infinite;
+}
+
+@keyframes hairSway{
+
+    0%,100%{ transform:rotate(0deg); }
+    50%{ transform:rotate(-1.2deg); }
+}
+
+.character-eyes{
+
+    position:absolute;
+
+    inset:0;
+
+    width:100%;
+
+    height:100%;
+
+    image-rendering:pixelated;
+
+    image-rendering:crisp-edges;
+
+    transform-origin:50% 55%;
+
+    animation:eyeLife 7s ease-in-out infinite;
+}
+
+/* پلک‌زدن + نگاه کردن به اطراف، ترکیب‌شده توی یه چرخه‌ی طبیعی */
+@keyframes eyeLife{
+
+    0%,4%      { transform:translateX(0) scaleY(1); }
+    6%         { transform:translateX(0) scaleY(0.08); }
+    8%,34%     { transform:translateX(0) scaleY(1); }
+    40%,54%    { transform:translateX(3%) scaleY(1); }
+    57%        { transform:translateX(3%) scaleY(0.08); }
+    59%,68%    { transform:translateX(3%) scaleY(1); }
+    74%,88%    { transform:translateX(-3%) scaleY(1); }
+    92%        { transform:translateX(0) scaleY(1); }
+    95%        { transform:translateX(0) scaleY(0.08); }
+    97%,100%   { transform:translateX(0) scaleY(1); }
+}
+
+.char-fade-out{
+
+    animation:fadeOutSoft .25s ease forwards;
+}
+
+@keyframes fadeOutSoft{
+
+    to{ opacity:0; }
 }
 
 .breathing{
@@ -1568,11 +1812,21 @@ MAIN SCREEN (Hub) — Clash Royale style
 
 .main-screen{
 
-    padding:16px;
+    padding:clamp(10px, 3vh, 16px);
 
     justify-content:space-between;
 
     gap:0;
+
+    height:100vh;
+
+    height:100dvh;
+
+    height:100svh;
+
+    min-height:0;
+
+    overflow:hidden;
 }
 
 .main-topbar{
@@ -1603,6 +1857,8 @@ MAIN SCREEN (Hub) — Clash Royale style
 
     flex:1;
 
+    min-height:0;
+
     width:100%;
 
     display:flex;
@@ -1614,6 +1870,8 @@ MAIN SCREEN (Hub) — Clash Royale style
     justify-content:center;
 
     gap:4px;
+
+    overflow:hidden;
 }
 
 .character-pedestal{
@@ -1650,26 +1908,34 @@ MAIN SCREEN (Hub) — Clash Royale style
 
     width:100%;
 
+    max-width:100%;
+
     display:flex;
 
     align-items:flex-end;
 
     justify-content:center;
 
-    gap:10px;
+    flex-wrap:wrap;
+
+    gap:clamp(6px, 3vw, 14px);
 
     padding-bottom:6px;
+
+    box-sizing:border-box;
 }
 
 .hub-slot{
 
     position:relative;
 
-    width:54px;
+    width:clamp(40px, 12vw, 50px);
 
-    height:54px;
+    height:clamp(40px, 12vw, 50px);
 
-    border-radius:18px;
+    flex-shrink:0;
+
+    border-radius:16px;
 
     background:rgba(255,255,255,0.06);
 
@@ -1681,7 +1947,7 @@ MAIN SCREEN (Hub) — Clash Royale style
 
     justify-content:center;
 
-    font-size:1.4rem;
+    font-size:1.25rem;
 
     filter:grayscale(.4);
 
@@ -1762,13 +2028,17 @@ MAIN SCREEN (Hub) — Clash Royale style
    Battle توی بازی‌های موبایل */
 .main-bottom-bar .adventure-btn{
 
-    margin:0 4px;
+    margin:0 2px;
 
-    transform:translateY(-14px);
+    transform:translateY(-12px);
 
-    padding:16px 30px;
+    padding:14px clamp(18px, 6vw, 30px);
 
-    font-size:1.05rem;
+    font-size:clamp(0.9rem, 4vw, 1.05rem);
+
+    flex-shrink:1;
+
+    white-space:nowrap;
 }
 
 /* ==========================
