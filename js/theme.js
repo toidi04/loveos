@@ -8,16 +8,18 @@
 
 const THEMES = {
 
+    // عسل 🔮 - دوتایی رنگ بنفش-صورتیِ رازآلود
     asal: {
         name: "عسل",
-        primary: "#7C3AED",
-        secondary: "#22C55E"
+        primary: "#9333EA",
+        secondary: "#F472B6"
     },
 
+    // یاسین ⭐ - دوتایی رنگ طلایی-نیلیِ گرم
     yasin: {
         name: "یاسین",
-        primary: "#16A34A",
-        secondary: "#8B5CF6"
+        primary: "#6366F1",
+        secondary: "#F59E0B"
     }
 
 };

@@ -58,6 +58,10 @@ function buildEnding(screen){
 
 function typeEnding(message,target){
 
+    // Array.from تا ایموجی‌هایی مثل 💜 که از دو واحد UTF-16
+    // ساخته شدن وسط تایپ نشکنن
+    const chars=Array.from(message);
+
     let i=0;
 
     let done=false;
@@ -68,13 +72,13 @@ function typeEnding(message,target){
 
     const timer=setInterval(function(){
 
-        target.textContent+=message[i];
+        target.textContent+=chars[i];
 
         i++;
 
 
 
-        if(i>=message.length){
+        if(i>=chars.length){
 
             finish();
 

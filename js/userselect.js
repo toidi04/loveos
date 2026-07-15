@@ -104,6 +104,63 @@ function selectUser(userKey, card, overlay){
   MAIN SCREEN (Hub)
 =========================================*/
 
+// نسخه‌ی DOM/CSS (fallback) از رندر شخصیت — وقتی PixiJS در دسترس نیست
+function buildDomCharacterLayers(charWrap, userKey){
+
+    charWrap.classList.add("breathing");
+
+    const charImg = document.createElement("img");
+
+    charImg.className = "home-character";
+
+    charImg.id = "mainCharacterImg";
+
+    charImg.src = `assets/characters/${userKey}.png`;
+
+    charImg.alt = THEMES[userKey] ? THEMES[userKey].name : "";
+
+    const eyesImg = document.createElement("img");
+
+    eyesImg.className = "character-eyes";
+
+    eyesImg.id = "mainCharacterEyes";
+
+    eyesImg.src = `assets/characters/${userKey}-eyes.png`;
+
+    eyesImg.alt = "";
+
+    const itemImg = document.createElement("img");
+
+    itemImg.className = "character-item";
+
+    itemImg.id = "mainCharacterItem";
+
+    itemImg.src = `assets/characters/${userKey}-item.png`;
+
+    itemImg.alt = "";
+
+    itemImg.style.transformOrigin = ITEM_PIVOT[userKey] || "60% 55%";
+
+    const hairImg = document.createElement("img");
+
+    hairImg.className = "character-hair";
+
+    hairImg.id = "mainCharacterHair";
+
+    hairImg.src = `assets/characters/${userKey}-hair.png`;
+
+    hairImg.alt = "";
+
+    charWrap.appendChild(charImg);
+
+    charWrap.appendChild(itemImg);
+
+    charWrap.appendChild(hairImg);
+
+    charWrap.appendChild(eyesImg);
+
+}
+
 function showMainScreen(userKey){
 
     currentUser = userKey;
@@ -152,59 +209,51 @@ function showMainScreen(userKey){
 
     const charWrap = document.createElement("div");
 
-    charWrap.className = "character-wrap breathing";
+    charWrap.className = "character-wrap";
 
     charWrap.id = "mainCharacterWrap";
 
-    const charImg = document.createElement("img");
+    if (typeof PixiCharacter !== "undefined" && PixiCharacter){
 
-    charImg.className = "home-character";
+        // ---- مسیر PixiJS: بدنه/مو/آیتم/چشم به‌صورت Sprite رندر می‌شن ----
+        try {
 
-    charImg.id = "mainCharacterImg";
+            if (window.__pixiCharacterController){
+                window.__pixiCharacterController.destroy();
+                window.__pixiCharacterController = null;
+            }
 
-    charImg.src = `assets/characters/${userKey}.png`;
+            const controller = PixiCharacter.mount(charWrap, userKey);
 
-    charImg.alt = theme.name;
+            window.__pixiCharacterController = controller;
 
-    const eyesImg = document.createElement("img");
+            controller.ready.catch(()=>{
 
-    eyesImg.className = "character-eyes";
+                // لود تکسچرها fail شد (مثلا سرو نشدن از یه سرور واقعی)
+                // - بی‌صدا برمی‌گردیم به نسخه‌ی DOM/CSS
+                if (window.__pixiCharacterController === controller){
 
-    eyesImg.id = "mainCharacterEyes";
+                    controller.destroy();
+                    window.__pixiCharacterController = null;
+                    charWrap.innerHTML = "";
+                    buildDomCharacterLayers(charWrap, userKey);
 
-    eyesImg.src = `assets/characters/${userKey}-eyes.png`;
+                }
 
-    eyesImg.alt = "";
+            });
 
-    const itemImg = document.createElement("img");
+        } catch (err){
 
-    itemImg.className = "character-item";
+            console.warn("PixiCharacter mount failed, falling back to DOM layers:", err);
+            buildDomCharacterLayers(charWrap, userKey);
 
-    itemImg.id = "mainCharacterItem";
+        }
 
-    itemImg.src = `assets/characters/${userKey}-item.png`;
+    } else {
 
-    itemImg.alt = "";
+        buildDomCharacterLayers(charWrap, userKey);
 
-    itemImg.style.transformOrigin = ITEM_PIVOT[userKey] || "60% 55%";
-
-    const hairImg = document.createElement("img");
-
-    hairImg.className = "character-hair";
-
-    hairImg.id = "mainCharacterHair";
-
-    hairImg.src = `assets/characters/${userKey}-hair.png`;
-
-    hairImg.alt = "";
-
-    charWrap.appendChild(charImg);
-
-    charWrap.appendChild(itemImg);
-
-    charWrap.appendChild(hairImg);
-
-    charWrap.appendChild(eyesImg);
+    }
 
     const greeting = document.createElement("p");
 
@@ -407,63 +456,71 @@ function openSettings(mainScreen){
 
             currentUser = opt.key;
 
-            const img = document.getElementById("mainCharacterImg");
+            if (window.__pixiCharacterController){
 
-            const eyesImg = document.getElementById("mainCharacterEyes");
+                window.__pixiCharacterController.switchTo(opt.key);
 
-            const itemImg = document.getElementById("mainCharacterItem");
+            } else {
 
-            const hairImg = document.getElementById("mainCharacterHair");
+                const img = document.getElementById("mainCharacterImg");
 
-            const greetingEl = document.getElementById("mainGreeting");
+                const eyesImg = document.getElementById("mainCharacterEyes");
 
-            if(img){
+                const itemImg = document.getElementById("mainCharacterItem");
 
-                img.classList.add("char-fade-out");
+                const hairImg = document.getElementById("mainCharacterHair");
 
-                if(eyesImg) eyesImg.classList.add("char-fade-out");
+                if(img){
 
-                if(itemImg) itemImg.classList.add("char-fade-out");
+                    img.classList.add("char-fade-out");
 
-                if(hairImg) hairImg.classList.add("char-fade-out");
+                    if(eyesImg) eyesImg.classList.add("char-fade-out");
 
-                setTimeout(()=>{
+                    if(itemImg) itemImg.classList.add("char-fade-out");
 
-                    img.src = `assets/characters/${opt.key}.png`;
+                    if(hairImg) hairImg.classList.add("char-fade-out");
 
-                    img.alt = THEMES[opt.key].name;
+                    setTimeout(()=>{
 
-                    img.classList.remove("char-fade-out");
+                        img.src = `assets/characters/${opt.key}.png`;
 
-                    if(eyesImg){
+                        img.alt = THEMES[opt.key].name;
 
-                        eyesImg.src = `assets/characters/${opt.key}-eyes.png`;
+                        img.classList.remove("char-fade-out");
 
-                        eyesImg.classList.remove("char-fade-out");
+                        if(eyesImg){
 
-                    }
+                            eyesImg.src = `assets/characters/${opt.key}-eyes.png`;
 
-                    if(itemImg){
+                            eyesImg.classList.remove("char-fade-out");
 
-                        itemImg.src = `assets/characters/${opt.key}-item.png`;
+                        }
 
-                        itemImg.style.transformOrigin = ITEM_PIVOT[opt.key] || "60% 55%";
+                        if(itemImg){
 
-                        itemImg.classList.remove("char-fade-out");
+                            itemImg.src = `assets/characters/${opt.key}-item.png`;
 
-                    }
+                            itemImg.style.transformOrigin = ITEM_PIVOT[opt.key] || "60% 55%";
 
-                    if(hairImg){
+                            itemImg.classList.remove("char-fade-out");
 
-                        hairImg.src = `assets/characters/${opt.key}-hair.png`;
+                        }
 
-                        hairImg.classList.remove("char-fade-out");
+                        if(hairImg){
 
-                    }
+                            hairImg.src = `assets/characters/${opt.key}-hair.png`;
 
-                },250);
+                            hairImg.classList.remove("char-fade-out");
+
+                        }
+
+                    },250);
+
+                }
 
             }
+
+            const greetingEl = document.getElementById("mainGreeting");
 
             if(greetingEl){
 

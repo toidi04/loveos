@@ -30,7 +30,15 @@ function buildGallery(screen){
     title.style.direction = "ltr";
 
     screen.appendChild(title);
-    
+
+    const sub = document.createElement("p");
+
+    sub.className = "gallery-hint";
+
+    sub.textContent = "روی هر عکس بزن تا خاطره‌ش رو بخونی 💜";
+
+    screen.appendChild(sub);
+
     const grid = document.createElement("div");
 
     grid.className = "gallery-grid";
@@ -68,6 +76,25 @@ function buildGallery(screen){
     grid.appendChild(card);
 
     });
+
+    // دکمه‌ی ادامه‌ی مستقل از گالری - قبلا این دکمه داخل هر
+    // پاپ‌آپ خاطره بود، یعنی با دیدن فقط یکی از عکس‌ها کاربر
+    // مستقیم به صفحه‌ی بعد پرتاب می‌شد و بقیه‌ی عکس‌ها رو
+    // اصلا نمی‌دید. الان کاربر می‌تونه همه‌ی عکس‌ها رو ببینه
+    // و خودش با این دکمه ادامه بده.
+    const continueBtn = document.createElement("button");
+
+    continueBtn.className = "adventure-btn gallery-continue-btn";
+
+    continueBtn.textContent = "ادامه 💜";
+
+    continueBtn.onclick = function(){
+
+        startAnniversary();
+
+    };
+
+    screen.appendChild(continueBtn);
 }
 
 function openMemory(item){
@@ -113,7 +140,7 @@ function openMemory(item){
 
 
 
-    typeMemory(item.text,text);
+    typeMemory(item.text, text, overlay);
 
     SFX.play("chime", 0.35);
 
@@ -131,7 +158,13 @@ function openMemory(item){
 
 }
 
-function typeMemory(message,target){
+function typeMemory(message, target, overlay){
+
+    // با Array.from تجزیه می‌کنیم نه با ایندکس مستقیم روی رشته،
+    // چون ایموجی‌هایی مثل 💜 از دو واحد UTF-16 (surrogate pair)
+    // ساخته شدن؛ ایندکس مستقیم وسط ایموجی رو می‌شکافت و یه
+    // کاراکتر نامعتبر لحظه‌ای نشون می‌داد.
+    const chars = Array.from(message);
 
     let i = 0;
 
@@ -139,19 +172,17 @@ function typeMemory(message,target){
 
     target.textContent = "";
 
-    function addContinueButton(){
+    function addCloseButton(){
 
         const next = document.createElement("button");
 
-        next.textContent = "Continue 💜";
+        next.textContent = "بستن";
 
         next.style.margin = "20px";
 
         next.onclick = function(){
 
-            document.querySelector(".memory-overlay").remove();
-
-            startAnniversary();
+            overlay.remove();
 
         };
 
@@ -161,11 +192,11 @@ function typeMemory(message,target){
 
     const timer = setInterval(function(){
 
-        target.textContent += message[i];
+        target.textContent += chars[i];
 
         i++;
 
-        if(i>=message.length){
+        if(i>=chars.length){
 
             finish();
 
@@ -184,8 +215,7 @@ function typeMemory(message,target){
         target.textContent = message;
 
         // دکمه فقط یک بار، بعد از تموم شدن تایپ ساخته میشه
-        // (قبلا هر ۳۰ میلی‌ثانیه یک دکمه‌ی جدید اضافه میشد)
-        addContinueButton();
+        addCloseButton();
 
     }
 

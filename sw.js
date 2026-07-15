@@ -1,4 +1,4 @@
-const CACHE_NAME = "love-os-v1-34-0";
+const CACHE_NAME = "love-os-v1-36-1";
 
 const APP_SHELL = [
     "./",
@@ -10,11 +10,14 @@ const APP_SHELL = [
     "js/theme.js",
     "js/app.js",
     "js/userselect.js",
+    "js/pixi-background.js",
+    "js/pixi-character.js",
     "js/intro.js",
     "js/gift.js",
     "js/gallery.js",
     "js/anniversary.js",
     "js/game.js",
+    "js/pixi-game.js",
     "js/ending.js",
     "manifest.json",
     "assets/characters/asal.png",

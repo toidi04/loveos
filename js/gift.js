@@ -91,7 +91,10 @@ function spawnSparkles(gift){
 
         p.style.setProperty("--sy", Math.sin(angle)*distance + "px");
 
-        p.style.background = i%2===0 ? "#FFD166" : "#CDB4DB";
+        const themeAccent = getComputedStyle(document.documentElement)
+            .getPropertyValue("--purple-light").trim() || "#C9A9FF";
+
+        p.style.background = i%2===0 ? "#FFD166" : themeAccent;
 
         gift.appendChild(p);
 
@@ -145,6 +148,10 @@ function buildLetter(card){
 
 function typeLetter(message,target){
 
+    // Array.from تا ایموجی‌هایی مثل 💜 که از دو واحد UTF-16
+    // ساخته شدن وسط تایپ نشکنن
+    const chars = Array.from(message);
+
     let i = 0;
 
     let done = false;
@@ -153,11 +160,11 @@ function typeLetter(message,target){
 
     const timer = setInterval(()=>{
 
-        target.textContent += message[i];
+        target.textContent += chars[i];
 
         i++;
 
-        if(i >= message.length){
+        if(i >= chars.length){
 
             finish();
 

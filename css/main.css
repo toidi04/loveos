@@ -25,7 +25,12 @@ body{
     "IRANSans",
     sans-serif;
 
-    background:#12071F;
+    background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(139,47,217,.25), transparent),
+        radial-gradient(ellipse 60% 40% at 90% 100%, rgba(244,114,182,.12), transparent),
+        var(--bg-deep);
+
+    background-attachment:fixed;
 
     color:#ffffff;
 
@@ -41,21 +46,27 @@ body{
 
 :root{
 
-    --bg:#12071F;
+    --bg:#120821;
 
-    --card:#1E1031;
+    --bg-deep:#0A0413;
 
-    --purple:#7B2CBF;
+    --card:#20122F;
 
-    --purple-light:#B185DB;
+    --card-soft:#2A1840;
 
-    --accent-secondary:#22C55E;
+    --purple:#8B2FD9;
+
+    --purple-light:#C9A9FF;
+
+    --accent-secondary:#F472B6;
 
     --white:#ffffff;
 
-    --text:#EAEAEA;
+    --text:#EDE7F6;
 
     --radius:22px;
+
+    --gold:#FFD166;
 
 }
 
@@ -220,7 +231,7 @@ button:hover:not(:disabled){
 
     box-shadow:
 
-        0 10px 24px rgba(123,44,191,.5),
+        0 10px 24px rgba(139,47,217,.5),
 
         inset 0 1px 0 rgba(255,255,255,.4),
 
@@ -242,9 +253,13 @@ button:disabled{
 
 .card{
 
+    position:relative;
+
     width:100%;
 
-    background:var(--card);
+    background:linear-gradient(165deg, var(--card-soft), var(--card));
+
+    border:1px solid rgba(255,255,255,.06);
 
     border-radius:var(--radius);
 
@@ -255,6 +270,28 @@ button:disabled{
     0 15px 40px
 
     rgba(0,0,0,.35);
+
+    overflow:hidden;
+
+}
+
+.card::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+
+    left:0;
+
+    right:0;
+
+    height:2px;
+
+    background:linear-gradient(90deg, transparent, var(--purple-light), transparent);
+
+    opacity:.8;
 
 }
 
@@ -335,7 +372,7 @@ INTRO
 
     font-size:5rem;
 
-    filter:drop-shadow(0 0 25px rgba(177,133,219,.7));
+    filter:drop-shadow(0 0 25px rgba(201,169,255,.7));
 
 }
 
@@ -352,7 +389,7 @@ INTRO
 
 .intro-subtitle{
 
-    color:#CDB4DB;
+    color:#D8BFFF;
 
     margin-bottom:20px;
 
@@ -398,7 +435,7 @@ GIFT
 
     unicode-bidi:isolate;
 
-    color:#CDB4DB;
+    color:#D8BFFF;
 
 }
 
@@ -434,7 +471,7 @@ GIFT
     
     box-shadow:
 
-        0 0 0 rgba(123,44,191,.4);
+        0 0 0 rgba(139,47,217,.4);
 
 }
 
@@ -587,7 +624,7 @@ GIFT
 
         transform:scale(1);
 
-        box-shadow:0 0 0 rgba(123,44,191,.4);
+        box-shadow:0 0 0 rgba(139,47,217,.4);
 
     }
 
@@ -595,7 +632,7 @@ GIFT
 
         transform:scale(1.12);
 
-        box-shadow:0 0 45px rgba(177,133,219,.95);
+        box-shadow:0 0 45px rgba(201,169,255,.95);
 
     }
 
@@ -603,7 +640,7 @@ GIFT
 
         transform:scale(.9);
 
-        box-shadow:0 0 55px rgba(177,133,219,.85);
+        box-shadow:0 0 55px rgba(201,169,255,.85);
 
     }
 
@@ -611,7 +648,7 @@ GIFT
 
         transform:scale(.92);
 
-        box-shadow:0 0 15px rgba(177,133,219,.5);
+        box-shadow:0 0 15px rgba(201,169,255,.5);
 
     }
 
@@ -726,6 +763,24 @@ GALLERY
 
 }
 
+.gallery-hint{
+
+    color:var(--purple-light);
+
+    font-size:.85rem;
+
+    margin-top:6px;
+
+    opacity:.8;
+
+}
+
+.gallery-continue-btn{
+
+    margin:30px auto 8px;
+
+}
+
 .gallery-list{
 
     display:flex;
@@ -804,6 +859,10 @@ GALLERY
 
     border-radius:20px;
 
+    background:var(--card);
+
+    border:1px solid rgba(255,255,255,.06);
+
     cursor:pointer;
 
     transition:transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease;
@@ -845,7 +904,7 @@ GALLERY
 
     transform:translateY(-4px) scale(1.03);
 
-    box-shadow:0 10px 24px rgba(123,44,191,.4);
+    box-shadow:0 10px 24px rgba(139,47,217,.4);
 
 }
 
@@ -900,7 +959,7 @@ MEMORY
 
     max-width:380px;
 
-    background:#1E1031;
+    background:var(--card);
 
     border-radius:24px;
 
@@ -946,7 +1005,7 @@ MEMORY
 
     width:100%;
 
-    background:#1E1031;
+    background:var(--card);
 
     border-radius:24px;
 
@@ -972,7 +1031,7 @@ MEMORY
 
 .love-counter span{
 
-    color:#CDB4DB;
+    color:#D8BFFF;
 
 }
 /* ==========================
@@ -1039,7 +1098,7 @@ ENDING
 
         inset 0 1px 0 rgba(255,255,255,.25),
 
-        0 0 0 0 rgba(177,133,219,0);
+        0 0 0 0 rgba(201,169,255,0);
 
     transition:transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .35s ease, border-color .35s ease;
 }
@@ -1063,7 +1122,7 @@ ENDING
 
         inset 0 1px 0 rgba(255,255,255,.3),
 
-        0 0 22px 2px rgba(177,133,219,.55);
+        0 0 22px 2px rgba(201,169,255,.55);
 }
 
 .icon-btn:active{
@@ -1109,7 +1168,7 @@ SPLASH
 
     border-radius:50%;
 
-    background:radial-gradient(circle, var(--purple-light) 0%, rgba(177,133,219,0) 70%);
+    background:radial-gradient(circle, var(--purple-light) 0%, rgba(201,169,255,0) 70%);
 
     opacity:.55;
 
@@ -1161,7 +1220,7 @@ SPLASH
 
     height:10px;
 
-    background:#241536;
+    background:var(--card);
 
     border-radius:999px;
 
@@ -1187,7 +1246,7 @@ SPLASH
 
     animation:loading 2s ease-in-out forwards;
 
-    box-shadow:0 0 10px 1px rgba(177,133,219,.6);
+    box-shadow:0 0 10px 1px rgba(201,169,255,.6);
 
 }
 
@@ -1230,7 +1289,7 @@ GAME — 7 GOLDEN HEARTS
 
 .game-desc{
 
-    color:#CDB4DB;
+    color:#D8BFFF;
 
     line-height:1.9;
 
@@ -1254,7 +1313,7 @@ GAME — 7 GOLDEN HEARTS
 
     border:1px solid rgba(255,255,255,0.25);
 
-    color:#CDB4DB;
+    color:#D8BFFF;
 
     box-shadow:none;
 
@@ -1310,7 +1369,7 @@ GAME — 7 GOLDEN HEARTS
 
 .hud-time{
 
-    color:#CDB4DB;
+    color:#D8BFFF;
 
     font-variant-numeric:tabular-nums;
 }
@@ -1327,7 +1386,7 @@ GAME — 7 GOLDEN HEARTS
 
     max-height:520px;
 
-    background:linear-gradient(180deg,#1E1031,#12071F);
+    background:linear-gradient(180deg,var(--card-soft),var(--bg-deep));
 
     border-radius:22px;
 
@@ -1337,7 +1396,7 @@ GAME — 7 GOLDEN HEARTS
 
     border:1px solid rgba(255,255,255,0.08);
 
-    box-shadow:inset 0 0 40px rgba(123,44,191,.25);
+    box-shadow:inset 0 0 40px rgba(139,47,217,.25);
 
 }
 
@@ -1353,7 +1412,7 @@ GAME — 7 GOLDEN HEARTS
 
     transition:left .05s linear;
 
-    filter:drop-shadow(0 4px 10px rgba(123,44,191,.6));
+    filter:drop-shadow(0 4px 10px rgba(139,47,217,.6));
 
     user-select:none;
 
@@ -1435,7 +1494,7 @@ USER SELECT MODAL (Glassmorphism)
 
     padding:24px;
 
-    background:radial-gradient(circle at 50% 30%, rgba(123,44,191,.25), rgba(10,5,18,.85));
+    background:radial-gradient(circle at 50% 30%, rgba(139,47,217,.25), rgba(10,5,18,.85));
 
     backdrop-filter:blur(4px);
 
@@ -1531,7 +1590,7 @@ USER SELECT MODAL (Glassmorphism)
 
     border-color:var(--purple-light);
 
-    box-shadow:0 10px 26px rgba(123,44,191,.4);
+    box-shadow:0 10px 26px rgba(139,47,217,.4);
 }
 
 .user-card-selected{
@@ -1546,7 +1605,7 @@ USER SELECT MODAL (Glassmorphism)
 
     0%{
 
-        box-shadow:0 0 0 rgba(177,133,219,0);
+        box-shadow:0 0 0 rgba(201,169,255,0);
 
         transform:scale(1);
 
@@ -1554,7 +1613,7 @@ USER SELECT MODAL (Glassmorphism)
 
     50%{
 
-        box-shadow:0 0 40px rgba(177,133,219,.9);
+        box-shadow:0 0 40px rgba(201,169,255,.9);
 
         transform:scale(1.12);
 
@@ -1562,7 +1621,7 @@ USER SELECT MODAL (Glassmorphism)
 
     100%{
 
-        box-shadow:0 0 20px rgba(177,133,219,.6);
+        box-shadow:0 0 20px rgba(201,169,255,.6);
 
         transform:scale(1.04);
 
@@ -1601,7 +1660,7 @@ HOME SCREEN
 
     image-rendering:crisp-edges;
 
-    filter:drop-shadow(0 10px 24px rgba(123,44,191,.45));
+    filter:drop-shadow(0 10px 24px rgba(139,47,217,.45));
 }
 
 .character-item{
@@ -1742,7 +1801,7 @@ HOME SCREEN
 
     background:linear-gradient(135deg, var(--purple), var(--purple-light));
 
-    box-shadow:0 10px 30px rgba(123,44,191,.5);
+    box-shadow:0 10px 30px rgba(139,47,217,.5);
 
 }
 
@@ -1756,13 +1815,13 @@ HOME SCREEN
 
     0%{
 
-        box-shadow:0 10px 30px rgba(123,44,191,.5);
+        box-shadow:0 10px 30px rgba(139,47,217,.5);
 
     }
 
     50%{
 
-        box-shadow:0 0 55px rgba(177,133,219,1);
+        box-shadow:0 0 55px rgba(201,169,255,1);
 
         transform:scale(.95);
 
@@ -2061,7 +2120,7 @@ SETTINGS PANEL
 
     padding:24px;
 
-    background:radial-gradient(circle at 50% 30%, rgba(123,44,191,.2), rgba(10,5,18,.85));
+    background:radial-gradient(circle at 50% 30%, rgba(139,47,217,.2), rgba(10,5,18,.85));
 
     backdrop-filter:blur(4px);
 }
@@ -2131,7 +2190,7 @@ SETTINGS PANEL
 
     border-color:var(--purple-light);
 
-    box-shadow:0 0 16px rgba(177,133,219,.5);
+    box-shadow:0 0 16px rgba(201,169,255,.5);
 }
 
 .settings-close-btn{
