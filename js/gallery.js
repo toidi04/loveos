@@ -16,6 +16,8 @@ function startGallery(){
 
     app.appendChild(screen);
 
+    buildEventExitButton(screen);
+
     buildGallery(screen);
 
     SFX.play("whoosh", 0.35);

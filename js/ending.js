@@ -14,6 +14,8 @@ function startEnding(){
 
     app.appendChild(screen);
 
+    buildEventExitButton(screen);
+
     buildEnding(screen);
 
     SFX.play("success", 0.5);
@@ -109,13 +111,13 @@ function showRestart(screen){
 
     const button=document.createElement("button");
 
-    button.textContent="Restart 💜";
+    button.textContent="بازگشت به خانه 💜";
 
 
 
     button.onclick=function(){
 
-        showUserSelect();
+        exitToMainScreen(screen);
 
     };
 

@@ -2254,3 +2254,749 @@ SETTINGS PANEL
 
     transform:translateX(-24px);
 }
+
+/* ==========================================
+   GAMES HUB — صفحه‌ی انتخاب بازی
+========================================== */
+
+.games-screen{
+
+    padding:clamp(10px, 3vh, 16px);
+
+    height:100vh;
+    height:100dvh;
+    height:100svh;
+
+    min-height:0;
+
+    align-items:stretch;
+
+    gap:18px;
+
+    overflow-y:auto;
+}
+
+.games-topbar{
+
+    justify-content:flex-start;
+
+    gap:14px;
+}
+
+.games-topbar .main-logo{
+
+    font-size:1.1rem;
+}
+
+.games-topbar-spacer{
+
+    flex:1;
+}
+
+.games-back-btn{
+
+    font-size:20px;
+}
+
+.games-grid{
+
+    width:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:16px;
+
+    padding-bottom:12px;
+}
+
+.game-card{
+
+    position:relative;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px;
+
+    width:100%;
+
+    text-align:right;
+
+    background:linear-gradient(165deg, var(--card-soft), var(--card));
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:var(--radius);
+
+    padding:18px;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.35);
+
+    cursor:pointer;
+
+    opacity:0;
+
+    transform:translateY(18px);
+
+    animation:gameCardIn .55s cubic-bezier(.22,1,.36,1) forwards;
+
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease, border-color .3s ease;
+}
+
+.game-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:0;
+    right:0;
+
+    height:2px;
+
+    background:linear-gradient(90deg, transparent, var(--purple-light), transparent);
+
+    opacity:.8;
+}
+
+.game-card:hover{
+
+    transform:translateY(-3px);
+
+    border-color:var(--purple-light);
+
+    box-shadow:0 18px 46px rgba(0,0,0,.4), 0 0 24px rgba(201,169,255,.35);
+}
+
+.game-card:active{
+
+    transform:scale(.97);
+}
+
+@keyframes gameCardIn{
+
+    from{
+        opacity:0;
+        transform:translateY(18px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.game-card-icon{
+
+    flex-shrink:0;
+
+    width:60px;
+    height:60px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    font-size:28px;
+
+    background:radial-gradient(circle at 30% 25%, rgba(255,255,255,.16), rgba(255,255,255,.03));
+
+    border:1px solid rgba(255,255,255,.12);
+
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.2);
+}
+
+.game-card-text{
+
+    flex:1;
+
+    min-width:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:2px;
+}
+
+.game-card-title{
+
+    font-size:1.02rem;
+
+    font-weight:700;
+}
+
+.game-card-subtitle{
+
+    font-size:.72rem;
+
+    letter-spacing:.5px;
+
+    color:var(--purple-light);
+
+    opacity:.85;
+
+    direction:ltr;
+
+    text-align:right;
+}
+
+.game-card-desc{
+
+    margin-top:4px;
+
+    font-size:.8rem;
+
+    color:var(--text);
+
+    opacity:.7;
+
+    line-height:1.5;
+}
+
+.game-card-cta{
+
+    flex-shrink:0;
+
+    font-size:.78rem;
+
+    font-weight:700;
+
+    padding:8px 14px;
+
+    border-radius:12px;
+
+    background:linear-gradient(135deg, var(--purple), var(--purple-light));
+
+    white-space:nowrap;
+
+    box-shadow:0 6px 16px rgba(139,47,217,.4);
+}
+
+.game-card-locked{
+
+    cursor:pointer;
+
+    filter:grayscale(.35);
+
+    opacity:.8;
+}
+
+.game-card-locked .game-card-cta{
+
+    background:rgba(255,255,255,.08);
+
+    box-shadow:none;
+
+    border:1px solid rgba(255,255,255,.15);
+}
+
+.games-coming-soon-tip{
+
+    position:absolute;
+
+    bottom:-6px;
+
+    left:50%;
+
+    transform:translate(-50%, 100%);
+
+    z-index:5;
+}
+
+/* ==========================================
+   RELATIONSHIP WIDGET
+========================================== */
+
+.relationship-slot{
+
+    filter:none;
+
+    opacity:1;
+
+    background:linear-gradient(155deg, rgba(255,255,255,.14), rgba(255,255,255,.03));
+
+    border-color:rgba(244,114,182,.35);
+
+    gap:1px;
+
+    flex-direction:column;
+}
+
+.relationship-slot-emoji{
+
+    font-size:1rem;
+
+    line-height:1;
+
+    animation:relationshipPulse 2.4s ease-in-out infinite;
+}
+
+.relationship-slot-days{
+
+    font-size:.62rem;
+
+    font-weight:800;
+
+    line-height:1;
+
+    color:var(--purple-light);
+
+    direction:ltr;
+}
+
+@keyframes relationshipPulse{
+
+    0%, 100%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.14);
+    }
+}
+
+.relationship-overlay .settings-panel{
+
+    text-align:center;
+
+    align-items:center;
+}
+
+.relationship-big-days{
+
+    font-size:1.8rem;
+
+    font-weight:800;
+
+    direction:ltr;
+
+    display:flex;
+
+    align-items:baseline;
+
+    gap:8px;
+
+    justify-content:center;
+}
+
+.relationship-big-days-num{
+
+    font-size:2.2rem;
+
+    background:linear-gradient(135deg, var(--purple-light), var(--gold));
+
+    -webkit-background-clip:text;
+
+    background-clip:text;
+
+    color:transparent;
+}
+
+.relationship-journey-label{
+
+    margin-top:6px;
+
+    direction:ltr;
+
+    text-align:center;
+}
+
+.relationship-bar-track{
+
+    width:100%;
+
+    height:16px;
+
+    border-radius:999px;
+
+    background:var(--card);
+
+    border:1px solid rgba(255,255,255,.1);
+
+    box-shadow:inset 0 2px 6px rgba(0,0,0,.5);
+
+    overflow:hidden;
+
+    direction:ltr;
+}
+
+.relationship-bar-fill{
+
+    height:100%;
+
+    width:0%;
+
+    border-radius:999px;
+
+    background:linear-gradient(90deg, var(--purple), var(--purple-light), var(--gold));
+
+    box-shadow:0 0 14px 1px rgba(201,169,255,.6);
+
+    transition:width 1s cubic-bezier(.22,1,.36,1);
+
+    position:relative;
+}
+
+.relationship-bar-fill::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+
+    animation:relationshipShine 2.6s ease-in-out infinite;
+}
+
+@keyframes relationshipShine{
+
+    0%{
+        transform:translateX(-100%);
+    }
+
+    100%{
+        transform:translateX(100%);
+    }
+}
+
+.relationship-bar-meta{
+
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    direction:ltr;
+}
+
+.relationship-bar-count{
+
+    font-size:.85rem;
+
+    font-weight:700;
+
+    color:var(--text);
+}
+
+.relationship-bar-remaining{
+
+    font-size:.7rem;
+
+    opacity:.6;
+
+    color:var(--text);
+}
+
+/* ==========================================
+   EVENTS SYSTEM
+========================================== */
+
+.events-slot{
+
+    filter:none;
+
+    opacity:1;
+
+    background:linear-gradient(155deg, rgba(255,255,255,.14), rgba(255,255,255,.03));
+
+    border-color:rgba(255,209,102,.35);
+}
+
+.events-slot .hub-slot-emoji{
+
+    animation:eventsSlotBounce 2.8s ease-in-out infinite;
+}
+
+@keyframes eventsSlotBounce{
+
+    0%, 100%{
+        transform:translateY(0) rotate(0deg);
+    }
+
+    50%{
+        transform:translateY(-3px) rotate(-8deg);
+    }
+}
+
+.events-panel{
+
+    max-height:80vh;
+
+    overflow:hidden;
+}
+
+.events-list{
+
+    width:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+    max-height:56vh;
+
+    overflow-y:auto;
+
+    padding-right:2px;
+}
+
+.event-card{
+
+    position:relative;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    width:100%;
+
+    text-align:right;
+
+    background:linear-gradient(165deg, var(--card-soft), var(--card));
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:18px;
+
+    padding:14px;
+
+    cursor:pointer;
+
+    opacity:0;
+
+    transform:translateY(14px);
+
+    animation:gameCardIn .5s cubic-bezier(.22,1,.36,1) forwards;
+
+    animation-delay:inherit;
+
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1), border-color .3s ease;
+}
+
+.event-card:hover{
+
+    transform:translateY(-2px);
+
+    border-color:var(--purple-light);
+}
+
+.event-card:active{
+
+    transform:scale(.97);
+}
+
+.event-card-icon{
+
+    flex-shrink:0;
+
+    width:48px;
+    height:48px;
+
+    border-radius:14px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    font-size:22px;
+
+    background:radial-gradient(circle at 30% 25%, rgba(255,255,255,.16), rgba(255,255,255,.03));
+
+    border:1px solid rgba(255,255,255,.12);
+}
+
+.event-card-text{
+
+    flex:1;
+
+    min-width:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:1px;
+}
+
+.event-card-title{
+
+    font-size:.92rem;
+
+    font-weight:700;
+}
+
+.event-card-subtitle{
+
+    font-size:.66rem;
+
+    color:var(--purple-light);
+
+    opacity:.85;
+
+    direction:ltr;
+
+    text-align:right;
+}
+
+.event-card-desc{
+
+    margin-top:3px;
+
+    font-size:.72rem;
+
+    color:var(--text);
+
+    opacity:.65;
+
+    line-height:1.45;
+}
+
+.event-card-cta{
+
+    flex-shrink:0;
+
+    font-size:.7rem;
+
+    font-weight:700;
+
+    padding:6px 10px;
+
+    border-radius:10px;
+
+    background:linear-gradient(135deg, var(--purple), var(--purple-light));
+
+    white-space:nowrap;
+}
+
+.event-card-locked{
+
+    filter:grayscale(.35);
+
+    opacity:.8;
+}
+
+.event-card-locked .event-card-cta{
+
+    background:rgba(255,255,255,.08);
+
+    border:1px solid rgba(255,255,255,.15);
+}
+
+.events-coming-soon-tip{
+
+    position:absolute;
+
+    bottom:-4px;
+
+    left:50%;
+
+    transform:translate(-50%, 100%);
+
+    z-index:5;
+}
+
+/* دکمه‌ی ضربدر بازگشت که تو صفحات داخل یک
+   Event (هدیه/نامه/گالری/ماهگرد/پایان) نشون
+   داده می‌شه */
+.event-exit-btn{
+
+    position:fixed;
+
+    top:calc(16px + env(safe-area-inset-top, 0px));
+
+    right:16px;
+
+    z-index:50;
+
+    font-size:16px;
+}
+
+.anniversary-heart{
+
+    font-size:3rem;
+
+    margin-bottom:6px;
+}
+
+.anniversary-message{
+
+    max-width:320px;
+
+    opacity:.85;
+}
+
+/* ==========================================
+   RELATIONSHIP — TIME BREAKDOWN ROW
+========================================== */
+
+.relationship-time-row{
+
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    margin-top:-4px;
+}
+
+.relationship-time-unit{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:2px;
+
+    min-width:48px;
+
+    padding:8px 6px;
+
+    border-radius:14px;
+
+    background:rgba(255,255,255,.05);
+
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.relationship-time-num{
+
+    font-size:1rem;
+
+    font-weight:800;
+
+    direction:ltr;
+
+    color:var(--purple-light);
+}
+
+.relationship-time-label{
+
+    font-size:.62rem;
+
+    opacity:.65;
+}

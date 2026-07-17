@@ -1,18 +1,12 @@
 /*=========================================
 ANNIVERSARY
+بخشی از رویداد «هفتمین ماهگرد». روزشمار
+رابطه دیگه اینجا نیست (تو ویجت Relationship
+صفحه‌ی اصلیه)، این صفحه فقط پیام و مرور
+سفر هفت‌ماهه رو نشون می‌ده.
 =========================================*/
 
-let anniversaryTimer = null;
-
 function startAnniversary(){
-
-    // اگه قبلا این صفحه ساخته شده بود، تایمرِ قبلی رو پاک کن
-    // (قبلا هر بار ورود به این صفحه یک setInterval جدید
-    //  اضافه میشد که هیچوقت پاک نمی‌شد -> نشتی حافظه)
-    if(anniversaryTimer){
-        clearInterval(anniversaryTimer);
-        anniversaryTimer = null;
-    }
 
     const app = document.getElementById("app");
 
@@ -24,124 +18,52 @@ function startAnniversary(){
 
     app.appendChild(screen);
 
+    buildEventExitButton(screen);
+
     buildAnniversary(screen);
 
     SFX.play("whoosh", 0.35);
 
 }
+
 function buildAnniversary(screen){
+
+    const heart = document.createElement("div");
+
+    heart.className = "anniversary-heart heartbeat";
+
+    heart.textContent = "💜";
 
     const title = document.createElement("h1");
 
-    title.textContent = "Our Journey 💜";
+    title.textContent = "Our Journey";
 
     title.style.direction = "ltr";
 
+    const message = document.createElement("p");
 
+    message.className = "anniversary-message";
 
-    const timer = document.createElement("div");
-
-    timer.className = "love-counter";
-
-
-
-    screen.appendChild(title);
-
-    screen.appendChild(timer);
-
-
-
-    updateCounter(timer);
-
-    anniversaryTimer = setInterval(function(){
-
-        updateCounter(timer);
-
-    },1000);
-
-
+    message.textContent = "هفت ماه پر از خاطره، خنده و عشق. این فقط شروعشه.";
 
     const button = document.createElement("button");
 
-    button.textContent = "Last Surprise 💜";
+    button.className = "adventure-btn";
 
-
-
-    button.style.marginTop = "40px";
-
-
+    button.textContent = "ادامه 💜";
 
     button.onclick = function(){
 
-        startGame();
+        startEnding();
 
     };
 
+    screen.appendChild(heart);
 
+    screen.appendChild(title);
+
+    screen.appendChild(message);
 
     screen.appendChild(button);
-
-}
-function updateCounter(target){
-
-    const start = new Date(LOVE_OS_CONFIG.startDate);
-
-    const now = new Date();
-
-
-
-    const diff = now - start;
-
-
-
-    const days = Math.floor(diff/(1000*60*60*24));
-
-
-
-    const hours = Math.floor(
-
-        diff%(1000*60*60*24)/(1000*60*60)
-
-    );
-
-
-
-    const minutes = Math.floor(
-
-        diff%(1000*60*60)/(1000*60)
-
-    );
-
-
-
-    const seconds = Math.floor(
-
-        diff%(1000*60)/1000
-
-    );
-
-
-
-    target.innerHTML =
-
-`
-
-<div>${days}</div>
-
-<span>Days</span>
-
-<div>${hours}</div>
-
-<span>Hours</span>
-
-<div>${minutes}</div>
-
-<span>Minutes</span>
-
-<div>${seconds}</div>
-
-<span>Seconds</span>
-
-`;
 
 }

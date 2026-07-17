@@ -67,11 +67,11 @@ function buildGameIntro(screen){
 
     const skipBtn = document.createElement("button");
 
-    skipBtn.textContent = "رد کردن بازی";
+    skipBtn.textContent = "بازگشت";
 
     skipBtn.className = "game-skip-btn";
 
-    skipBtn.onclick = ()=> startEnding();
+    skipBtn.onclick = ()=> showGamesScreen();
 
     screen.appendChild(title);
 
@@ -476,9 +476,9 @@ function endGame(screen, won){
 
         const next = document.createElement("button");
 
-        next.textContent = "ادامه 💜";
+        next.textContent = "بازگشت 💜";
 
-        next.onclick = ()=> startEnding();
+        next.onclick = ()=> showGamesScreen();
 
         screen.appendChild(title);
 
@@ -512,9 +512,9 @@ function endGame(screen, won){
 
         skip.className = "game-skip-btn";
 
-        skip.textContent = "رد کردن بازی";
+        skip.textContent = "بازگشت به بازی‌ها";
 
-        skip.onclick = ()=> startEnding();
+        skip.onclick = ()=> showGamesScreen();
 
         screen.appendChild(title);
 

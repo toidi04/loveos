@@ -274,7 +274,7 @@ function showMainScreen(userKey){
 
     bottomBar.className = "main-bottom-bar";
 
-    const lockedLeft = buildLockedSlot("🏆");
+    const lockedLeft = buildRelationshipSlot();
 
     const startBtn = document.createElement("button");
 
@@ -298,7 +298,7 @@ function showMainScreen(userKey){
 
             setTimeout(()=>{
 
-                startGift();
+                showGamesScreen();
 
             },550);
 
@@ -306,7 +306,7 @@ function showMainScreen(userKey){
 
     });
 
-    const lockedRight = buildLockedSlot("🎁");
+    const lockedRight = buildEventsSlot();
 
     bottomBar.appendChild(lockedLeft);
 

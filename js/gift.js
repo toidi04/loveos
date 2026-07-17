@@ -13,6 +13,8 @@ function startGift(){
 
     app.appendChild(screen);
 
+    buildEventExitButton(screen);
+
     buildGift(screen);
 
 }
@@ -121,6 +123,8 @@ function startLetter(){
     screen.appendChild(card);
 
     app.appendChild(screen);
+
+    buildEventExitButton(screen);
 
     buildLetter(card);
 
