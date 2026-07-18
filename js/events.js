@@ -189,13 +189,31 @@ function buildEventCard(ev, overlay){
 
     cta.className = "event-card-cta";
 
-    cta.textContent = ev.locked ? "🔒 به‌زودی" : "باز کن ▶";
+    cta.textContent = "›";
+
+    cta.setAttribute("aria-hidden", "true");
 
     card.appendChild(iconWrap);
 
     card.appendChild(textWrap);
 
-    card.appendChild(cta);
+    if(ev.locked){
+
+        const lockBadge = document.createElement("span");
+
+        lockBadge.className = "event-card-lock-badge";
+
+        lockBadge.textContent = "🔒";
+
+        lockBadge.setAttribute("aria-hidden", "true");
+
+        card.appendChild(lockBadge);
+
+    } else {
+
+        card.appendChild(cta);
+
+    }
 
     if(ev.locked){
 
@@ -235,11 +253,11 @@ function buildEventCard(ev, overlay){
 
 function showEventComingSoon(card){
 
-    if(card.querySelector(".coming-soon-tip")) return;
+    if(card.querySelector(".event-card-tip")) return;
 
     const tip = document.createElement("div");
 
-    tip.className = "coming-soon-tip events-coming-soon-tip";
+    tip.className = "event-card-tip fade-in";
 
     tip.textContent = "این رویداد به‌زودی اضافه می‌شه 💜";
 

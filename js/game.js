@@ -2,24 +2,96 @@
   GAME — "۷ قلب طلایی"
   به مناسبت هفتمین ماهگرد.
   باید ۷ قلب طلایی رو قبل از تموم شدن زمان
-  یا از دست دادن جون‌ها بگیری؛ از قلب‌های
-  شکسته دوری کن.
+  یا از دست دادن جون‌ها بگیری.
+  گل‌ها (🌸) امتیاز مثبت کوچیک می‌دن، اما
+  قلب‌های شکسته (💔) و خارها (🥀) یه جون
+  ازت می‌گیرن. هرچی امتیازت بیشتر بشه،
+  بازی سریع‌تر و هیجانی‌تر می‌شه.
 =========================================*/
 
 const GAME_CONFIG = {
     goldenTarget: 7,
     maxLives: 3,
     duration: 45,          // ثانیه
+
     spawnIntervalStart: 900,   // میلی‌ثانیه بین اسپان‌ها
-    spawnIntervalMin: 480,
+    spawnIntervalMin: 420,
+
     fallSpeedStart: 90,    // پیکسل بر ثانیه
-    fallSpeedMax: 170
+    fallSpeedMax: 200,
+
+    goldenScore: 15,
+    flowerScore: 2,
+
+    // امتیازی که در اون سرعت/تعداد اسپان به حداکثر سختی می‌رسه
+    scoreForMaxDifficulty: 90,
+
+    // احتمال ظاهر شدن هر نوع (مجموع باید ۱ باشه)
+    typeWeights: [
+        ["golden", 0.20],
+        ["thorn",  0.11],
+        ["broken", 0.11],
+        ["flower", 0.58]
+    ]
 };
 
 let gameState = null;
 let gameRAF = null;
 let gameSpawnTimer = null;
 let gameCountdownTimer = null;
+
+// ---------- توابع مشترک بین نسخه‌ی DOM و Pixi ----------
+
+function rollEntityType(){
+
+    const roll = Math.random();
+
+    let acc = 0;
+
+    for(const [type, weight] of GAME_CONFIG.typeWeights){
+
+        acc += weight;
+
+        if(roll < acc) return type;
+
+    }
+
+    return "flower";
+
+}
+
+// فاکتور سختی بین ۰ (شروع بازی) تا ۱ (حداکثر سختی)، بر اساس امتیاز فعلی
+function difficultyFactor(score){
+
+    return Math.max(0, Math.min(1, score / GAME_CONFIG.scoreForMaxDifficulty));
+
+}
+
+function applyDifficulty(){
+
+    if(!gameState) return;
+
+    const f = difficultyFactor(gameState.score);
+
+    gameState.spawnInterval = GAME_CONFIG.spawnIntervalStart -
+        (GAME_CONFIG.spawnIntervalStart - GAME_CONFIG.spawnIntervalMin) * f;
+
+    gameState.fallSpeed = GAME_CONFIG.fallSpeedStart +
+        (GAME_CONFIG.fallSpeedMax - GAME_CONFIG.fallSpeedStart) * f;
+
+}
+
+function entityGlyph(type){
+
+    if(type === "golden") return "💛";
+    if(type === "broken") return "💔";
+    if(type === "thorn")  return "🥀";
+
+    return "🌸";
+
+}
+
+// -------------------------------------------------------
 
 function startGame(){
 
@@ -55,7 +127,7 @@ function buildGameIntro(screen){
 
     desc.textContent =
         "به مناسبت هفتمین ماهگردمون، " + GAME_CONFIG.goldenTarget +
-        " تا قلب طلایی رو قبل از تموم شدن زمان بگیر. مراقب قلب‌های شکسته هم باش!";
+        " تا قلب طلایی رو قبل از تموم شدن زمان بگیر. گل‌ها 🌸 امتیاز اضافه می‌دن، ولی از قلب‌های شکسته 💔 و خارها 🥀 دوری کن — هرچی امتیازت بره بالا، بازی سریع‌تر می‌شه!";
 
     const startBtn = document.createElement("button");
 
@@ -100,6 +172,12 @@ function launchGame(screen){
 
     golden.innerHTML = `💛 <span id="goldenCount">0</span>/${GAME_CONFIG.goldenTarget}`;
 
+    const score = document.createElement("div");
+
+    score.className = "hud-score";
+
+    score.innerHTML = `⭐ <span id="hudScoreVal">0</span>`;
+
     const lives = document.createElement("div");
 
     lives.className = "hud-lives";
@@ -115,6 +193,8 @@ function launchGame(screen){
     timeEl.textContent = "⏱ " + GAME_CONFIG.duration;
 
     hud.appendChild(golden);
+
+    hud.appendChild(score);
 
     hud.appendChild(lives);
 
@@ -143,6 +223,7 @@ function launchGame(screen){
 
     gameState = {
         golden: 0,
+        score: 0,
         lives: GAME_CONFIG.maxLives,
         timeLeft: GAME_CONFIG.duration,
         entities: [],
@@ -205,23 +286,14 @@ function launchGame(screen){
 
     });
 
-    // اسپان کردن قلب‌ها
+    // اسپان کردن قلب‌ها/گل‌ها/خارها
     function spawnLoop(){
 
         if(!gameState || !gameState.running) return;
 
         spawnHeart(area);
 
-        // کمی سریع‌تر شدن تدریجی بازی برای هیجان بیشتر
-        gameState.spawnInterval = Math.max(
-            GAME_CONFIG.spawnIntervalMin,
-            gameState.spawnInterval - 12
-        );
-
-        gameState.fallSpeed = Math.min(
-            GAME_CONFIG.fallSpeedMax,
-            gameState.fallSpeed + 2
-        );
+        applyDifficulty();
 
         gameSpawnTimer = setTimeout(spawnLoop, gameState.spawnInterval);
 
@@ -258,23 +330,13 @@ function spawnHeart(area){
 
     gameState.areaHeight = rect.height;
 
-    const roll = Math.random();
-
-    let type;
-
-    if(roll < 0.22){
-        type = "golden";
-    }else if(roll < 0.40){
-        type = "bad";
-    }else{
-        type = "neutral";
-    }
+    const type = rollEntityType();
 
     const el = document.createElement("div");
 
     el.className = "falling-heart " + type;
 
-    el.textContent = type==="golden" ? "💛" : type==="bad" ? "💔" : "💜";
+    el.textContent = entityGlyph(type);
 
     area.appendChild(el);
 
@@ -283,8 +345,10 @@ function spawnHeart(area){
     const entity = {
         el, type,
         x,
+        baseX: x,
         y: -40,
-        caught: false
+        caught: false,
+        swayPhase: Math.random()*Math.PI*2
     };
 
     el.style.left = x + "px";
@@ -312,6 +376,17 @@ function gameLoop(timestamp){
         if(entity.caught) return;
 
         entity.y += gameState.fallSpeed * dt;
+
+        // خارها کمی چپ‌راست تاب می‌خورن تا فرار ازشون سخت‌تر باشه
+        if(entity.type === "thorn"){
+
+            entity.swayPhase += dt*3;
+
+            entity.x = entity.baseX + Math.sin(entity.swayPhase)*22;
+
+            entity.el.style.left = entity.x + "px";
+
+        }
 
         entity.el.style.top = entity.y + "px";
 
@@ -362,7 +437,15 @@ function catchHeart(entity){
 
         gameState.golden++;
 
+        gameState.score += GAME_CONFIG.goldenScore;
+
+        applyDifficulty();
+
         SFX.play("golden", 0.6);
+
+        updateScoreHud();
+
+        flashGameArea("gold");
 
         const counter = document.getElementById("goldenCount");
 
@@ -374,13 +457,15 @@ function catchHeart(entity){
 
         }
 
-    }else if(entity.type === "bad"){
+    }else if(entity.type === "broken" || entity.type === "thorn"){
 
         gameState.lives--;
 
         SFX.play("bad", 0.55);
 
         renderLives();
+
+        shakeGameArea();
 
         const basket = document.getElementById("gameBasket");
 
@@ -402,9 +487,54 @@ function catchHeart(entity){
 
     }else{
 
-        SFX.play("click", 0.3);
+        // flower — امتیاز کوچیک مثبت
+        gameState.score += GAME_CONFIG.flowerScore;
+
+        applyDifficulty();
+
+        SFX.play("click", 0.35);
+
+        updateScoreHud();
 
     }
+
+}
+
+function updateScoreHud(){
+
+    const el = document.getElementById("hudScoreVal");
+
+    if(el && gameState) el.textContent = gameState.score;
+
+}
+
+function shakeGameArea(){
+
+    const area = document.getElementById("gameArea");
+
+    if(!area) return;
+
+    area.classList.remove("game-area-shake");
+
+    void area.offsetWidth;
+
+    area.classList.add("game-area-shake");
+
+}
+
+function flashGameArea(kind){
+
+    const area = document.getElementById("gameArea");
+
+    if(!area) return;
+
+    const cls = kind === "gold" ? "game-area-flash-gold" : "game-area-flash";
+
+    area.classList.remove(cls);
+
+    void area.offsetWidth;
+
+    area.classList.add(cls);
 
 }
 
@@ -454,6 +584,10 @@ function endGame(screen, won){
 
     if(!screen) return;
 
+    const finalScore = gameState.score;
+
+    const finalGolden = gameState.golden;
+
     screen.innerHTML = "";
 
     screen.classList.remove("game-active");
@@ -472,7 +606,7 @@ function endGame(screen, won){
 
         msg.className = "game-desc";
 
-        msg.textContent = "درست مثل این هفت ماه، هر قلبی که گرفتی یه خاطره‌ی خوب بود. ممنون که کنارمی.";
+        msg.textContent = `درست مثل این هفت ماه، هر قلبی که گرفتی یه خاطره‌ی خوب بود. امتیاز نهایی: ${finalScore} ⭐. ممنون که کنارمی.`;
 
         const next = document.createElement("button");
 
@@ -500,7 +634,7 @@ function endGame(screen, won){
 
         msg.className = "game-desc";
 
-        msg.textContent = `${gameState.golden} از ${GAME_CONFIG.goldenTarget} تا قلب طلایی رو گرفتی. یه بار دیگه امتحان کن؟`;
+        msg.textContent = `${finalGolden} از ${GAME_CONFIG.goldenTarget} تا قلب طلایی رو گرفتی، با ${finalScore} امتیاز. یه بار دیگه امتحان کن؟`;
 
         const retry = document.createElement("button");
 

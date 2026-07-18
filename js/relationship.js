@@ -220,7 +220,7 @@ function buildRelationshipPanel(panel){
 
             const remaining = RELATIONSHIP_GOAL_DAYS - days;
 
-            barRemaining.textContent = `${remaining} روز مونده`;
+            barRemaining.textContent = `\u2066${remaining}\u2069 روز مونده`;
 
         }
 

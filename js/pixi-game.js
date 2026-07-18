@@ -1,9 +1,11 @@
 /*=========================================
   PIXI GAME — نسخه‌ی PixiJS بازی «۷ قلب طلایی»
   همون قوانین و HUD قبلی (از game.js) رو نگه
-  می‌داره، فقط ناحیه‌ی بازی (قلب‌های سقوط‌کننده
-  و سبد) با PixiJS رندر می‌شه؛ نرم‌تر و با
-  پارتیکل واقعی موقع گرفتن قلب طلایی.
+  می‌داره: گل‌ها امتیاز مثبت می‌دن، خارها و
+  قلب‌های شکسته جون کم می‌کنن، و هرچی امتیاز
+  بره بالا بازی سریع‌تر می‌شه. اینجا فقط
+  ناحیه‌ی بازی با PixiJS رندر می‌شه؛ نرم‌تر،
+  با پارتیکل واقعی و لرزش دوربین موقع برخورد.
   اگه PixiJS نباشه، همون نسخه‌ی DOM قبلی
   (launchGameDom) بدون تغییر اجرا می‌شه.
 =========================================*/
@@ -41,6 +43,10 @@ if (typeof PIXI !== "undefined") {
         golden.className = "hud-golden";
         golden.innerHTML = `💛 <span id="goldenCount">0</span>/${GAME_CONFIG.goldenTarget}`;
 
+        const score = document.createElement("div");
+        score.className = "hud-score";
+        score.innerHTML = `⭐ <span id="hudScoreVal">0</span>`;
+
         const lives = document.createElement("div");
         lives.className = "hud-lives";
         lives.id = "hudLives";
@@ -51,6 +57,7 @@ if (typeof PIXI !== "undefined") {
         timeEl.textContent = "⏱ " + GAME_CONFIG.duration;
 
         hud.appendChild(golden);
+        hud.appendChild(score);
         hud.appendChild(lives);
         hud.appendChild(timeEl);
 
@@ -63,6 +70,7 @@ if (typeof PIXI !== "undefined") {
 
         gameState = {
             golden: 0,
+            score: 0,
             lives: GAME_CONFIG.maxLives,
             timeLeft: GAME_CONFIG.duration,
             entities: [],
@@ -89,12 +97,92 @@ if (typeof PIXI !== "undefined") {
         area.appendChild(app.view);
         app.view.style.touchAction = "none";
 
+        // لایه‌ی دوربین: همه‌چیز (سبد، موجودیت‌ها، پارتیکل‌ها) داخل این
+        // Container قرار می‌گیرن تا لرزش دوربین با جابه‌جا کردن همین یک
+        // لایه پیاده بشه، نه هر آبجکت به‌صورت جدا
+        const cameraLayer = new PIXI.Container();
+        app.stage.addChild(cameraLayer);
+
         const basketText = new PIXI.Text("💜", { fontSize: 40 });
         basketText.anchor.set(0.5, 1);
-        app.stage.addChild(basketText);
+        cameraLayer.addChild(basketText);
 
         const particleLayer = new PIXI.Container();
-        app.stage.addChild(particleLayer);
+        cameraLayer.addChild(particleLayer);
+
+        // فلش نرم طلایی موقع گرفتن قلب اصلی
+        const flashOverlay = new PIXI.Graphics();
+        flashOverlay.alpha = 0;
+        app.stage.addChild(flashOverlay);
+
+        function drawFlash(color){
+
+            flashOverlay.clear();
+
+            if(!app.screen || !app.screen.width) return;
+
+            flashOverlay.beginFill(color, 1);
+            flashOverlay.drawRect(0, 0, app.screen.width, app.screen.height);
+            flashOverlay.endFill();
+
+        }
+
+        function triggerFlash(color){
+
+            drawFlash(color);
+
+            flashOverlay.alpha = 0.28;
+
+            let t = 0;
+
+            const tick = ()=>{
+
+                t += 0.08;
+
+                flashOverlay.alpha = Math.max(0, 0.28 - t);
+
+                if(flashOverlay.alpha <= 0){
+
+                    app.ticker.remove(tick);
+
+                }
+
+            };
+
+            app.ticker.add(tick);
+
+        }
+
+        // ---- لرزش دوربین واقعی: کل cameraLayer یه مدت کوتاه جابه‌جا می‌شه ----
+        let shakeTime = 0;
+        let shakeStrength = 0;
+
+        function triggerCameraShake(strength){
+
+            shakeStrength = strength;
+            shakeTime = 1;
+
+        }
+
+        function updateCameraShake(dt){
+
+            if(shakeTime > 0){
+
+                shakeTime = Math.max(0, shakeTime - dt*4);
+
+                const power = shakeStrength * shakeTime;
+
+                cameraLayer.x = (Math.random()*2-1) * power;
+                cameraLayer.y = (Math.random()*2-1) * power;
+
+            } else if(cameraLayer.x !== 0 || cameraLayer.y !== 0){
+
+                cameraLayer.x = 0;
+                cameraLayer.y = 0;
+
+            }
+
+        }
 
         function updateBasketX(clientX){
 
@@ -140,13 +228,9 @@ if (typeof PIXI !== "undefined") {
             gameState.areaWidth = rect.width;
             gameState.areaHeight = rect.height;
 
-            const roll = Math.random();
-            let type;
-            if (roll < 0.22) type = "golden";
-            else if (roll < 0.40) type = "bad";
-            else type = "neutral";
+            const type = rollEntityType();
 
-            const glyph = type==="golden" ? "💛" : type==="bad" ? "💔" : "💜";
+            const glyph = entityGlyph(type);
             const text = new PIXI.Text(glyph, { fontSize: type==="golden" ? 34 : 28 });
             text.anchor.set(0.5);
 
@@ -154,9 +238,13 @@ if (typeof PIXI !== "undefined") {
             text.x = x;
             text.y = -30;
 
-            app.stage.addChild(text);
+            cameraLayer.addChild(text);
 
-            gameState.entities.push({ el: text, type, x, y: -30, caught:false, pulsePhase: Math.random()*10 });
+            gameState.entities.push({
+                el: text, type, x, baseX: x, y: -30, caught:false,
+                pulsePhase: Math.random()*10,
+                swayPhase: Math.random()*Math.PI*2
+            });
 
         }
 
@@ -166,8 +254,7 @@ if (typeof PIXI !== "undefined") {
 
             spawnHeartPixi();
 
-            gameState.spawnInterval = Math.max(GAME_CONFIG.spawnIntervalMin, gameState.spawnInterval - 12);
-            gameState.fallSpeed = Math.min(GAME_CONFIG.fallSpeedMax, gameState.fallSpeed + 2);
+            applyDifficulty();
 
             gameSpawnTimer = setTimeout(spawnLoop, gameState.spawnInterval);
 
@@ -188,27 +275,39 @@ if (typeof PIXI !== "undefined") {
 
         }, 1000);
 
-        function burstParticles(x, y, color){
+        // پارتیکل غنی‌تر: دایره + ستاره‌ی کوچیک، رنگ‌ها بر اساس نوع برخورد
+        function burstParticles(x, y, colors, count){
 
-            for (let i=0;i<10;i++){
+            for (let i=0;i<count;i++){
 
                 const g = new PIXI.Graphics();
+                const color = colors[i % colors.length];
+                const isStar = i % 3 === 0;
+
                 g.beginFill(color);
-                g.drawCircle(0,0,3+Math.random()*2);
+
+                if(isStar){
+                    drawStar(g, 0, 0, 4, 5, 2);
+                } else {
+                    g.drawCircle(0,0,2.5+Math.random()*2.5);
+                }
+
                 g.endFill();
                 g.x = x; g.y = y;
 
-                const angle = (Math.PI*2/10)*i;
-                const speed = 2+Math.random()*2;
+                const angle = (Math.PI*2/count)*i + Math.random()*0.4;
+                const speed = 2.2+Math.random()*3;
                 g.vx = Math.cos(angle)*speed;
                 g.vy = Math.sin(angle)*speed;
                 g.life = 1;
+                g.rot = (Math.random()*2-1)*0.2;
 
                 particleLayer.addChild(g);
 
                 const tick = ()=>{
-                    g.x += g.vx; g.y += g.vy; g.vy += 0.12;
-                    g.life -= 0.04; g.alpha = Math.max(0, g.life);
+                    g.x += g.vx; g.y += g.vy; g.vy += 0.13;
+                    g.rotation += g.rot;
+                    g.life -= 0.035; g.alpha = Math.max(0, g.life);
                     if (g.life <= 0){
                         particleLayer.removeChild(g);
                         app.ticker.remove(tick);
@@ -220,6 +319,25 @@ if (typeof PIXI !== "undefined") {
 
         }
 
+        function drawStar(g, cx, cy, points, outerR, innerR){
+
+            const step = Math.PI / points;
+
+            g.moveTo(cx + outerR, cy);
+
+            for(let i=1;i<points*2;i++){
+
+                const r = i % 2 === 0 ? outerR : innerR;
+                const a = i * step;
+
+                g.lineTo(cx + Math.cos(a)*r, cy + Math.sin(a)*r);
+
+            }
+
+            g.closePath();
+
+        }
+
         function catchHeartPixi(entity){
 
             entity.caught = true;
@@ -227,24 +345,31 @@ if (typeof PIXI !== "undefined") {
             if (entity.type === "golden"){
 
                 gameState.golden++;
+                gameState.score += GAME_CONFIG.goldenScore;
+                applyDifficulty();
+
                 SFX.play("golden", 0.6);
-                burstParticles(entity.el.x, entity.el.y, 0xFFD166);
+                burstParticles(entity.el.x, entity.el.y, [0xFFD166, 0xFFF3C4, 0xFFB703], 16);
+                triggerFlash(0xFFD166);
+                triggerCameraShake(4);
+                updateScoreHud();
 
                 const counter = document.getElementById("goldenCount");
                 if (counter) counter.textContent = gameState.golden;
 
-                app.stage.removeChild(entity.el);
+                cameraLayer.removeChild(entity.el);
 
                 if (gameState.golden >= GAME_CONFIG.goldenTarget){
                     endGamePixi(true);
                     return;
                 }
 
-            } else if (entity.type === "bad"){
+            } else if (entity.type === "broken" || entity.type === "thorn"){
 
                 gameState.lives--;
                 SFX.play("bad", 0.55);
-                burstParticles(entity.el.x, entity.el.y, 0xff5b5b);
+                burstParticles(entity.el.x, entity.el.y, [0xff5b5b, 0xff9b9b, 0x8B2FD9], 12);
+                triggerCameraShake(10);
 
                 renderLives();
 
@@ -257,7 +382,7 @@ if (typeof PIXI !== "undefined") {
                 };
                 app.ticker.add(shakeTick);
 
-                app.stage.removeChild(entity.el);
+                cameraLayer.removeChild(entity.el);
 
                 if (gameState.lives <= 0){
                     endGamePixi(false);
@@ -266,8 +391,15 @@ if (typeof PIXI !== "undefined") {
 
             } else {
 
-                SFX.play("click", 0.3);
-                app.stage.removeChild(entity.el);
+                // flower — امتیاز کوچیک مثبت
+                gameState.score += GAME_CONFIG.flowerScore;
+                applyDifficulty();
+
+                SFX.play("click", 0.35);
+                burstParticles(entity.el.x, entity.el.y, [0xF472B6, 0xC9A9FF], 8);
+                updateScoreHud();
+
+                cameraLayer.removeChild(entity.el);
 
             }
 
@@ -282,6 +414,8 @@ if (typeof PIXI !== "undefined") {
             const dt = delta/60;
             const basketY = (app.screen.height||0) - 30;
 
+            updateCameraShake(dt);
+
             gameState.entities.forEach(entity=>{
 
                 if (entity.caught) return;
@@ -289,6 +423,15 @@ if (typeof PIXI !== "undefined") {
                 entity.y += gameState.fallSpeed * dt;
 
                 if (!Number.isFinite(entity.y)) { entity.caught = true; return; }
+
+                // خارها کمی چپ‌راست تاب می‌خورن تا فرار ازشون سخت‌تر باشه
+                if(entity.type === "thorn"){
+
+                    entity.swayPhase += dt*3;
+                    entity.x = entity.baseX + Math.sin(entity.swayPhase)*22;
+                    entity.el.x = entity.x;
+
+                }
 
                 entity.el.y = entity.y;
 
@@ -304,7 +447,7 @@ if (typeof PIXI !== "undefined") {
                     catchHeartPixi(entity);
                 } else if (entity.y > (app.screen.height||0) + 30){
                     entity.caught = true;
-                    app.stage.removeChild(entity.el);
+                    cameraLayer.removeChild(entity.el);
                 }
 
             });
