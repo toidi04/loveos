@@ -20,11 +20,11 @@ const GAMES_LIST = [
     {
         id: "runner",
         emoji: "🏃‍♂️",
-        title: "Endless Runner",
-        subtitle: "Coming Soon",
-        desc: "یک تعقیب و گریز پیکسلی بی‌پایان... به‌زودی.",
-        locked: true,
-        launch: null
+        title: "فرار بی‌پایان",
+        subtitle: "Endless Runner",
+        desc: "از موانع بپر و رد شو؛ روز و شب و آب‌وهوا هم عوض می‌شن.",
+        locked: false,
+        launch: function(){ startRunner(); }
     }
 ];
 

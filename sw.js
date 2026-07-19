@@ -1,4 +1,4 @@
-const CACHE_NAME = "love-os-v1-40-0";
+const CACHE_NAME = "love-os-v1-44-0-visuals";
 
 const APP_SHELL = [
     "./",
@@ -21,6 +21,7 @@ const APP_SHELL = [
     "js/anniversary.js",
     "js/game.js",
     "js/pixi-game.js",
+    "js/runner.js",
     "js/ending.js",
     "manifest.json",
     "assets/characters/asal.png",
@@ -31,8 +32,19 @@ const APP_SHELL = [
     "assets/characters/yasin-eyes.png",
     "assets/characters/yasin-hair.png",
     "assets/characters/yasin-item.png",
-    "assets/icons/icon-192.jpg",
-    "assets/icons/icon-512.jpg",
+    "assets/icons/icon-192.png",
+    "assets/icons/icon-512.png",
+    "assets/images/splash-heart.png",
+    "assets/images/particles/heart.png",
+    "assets/images/particles/sparkle.png",
+    "assets/images/particles/orb.png",
+    "assets/icons/ui/cake.png",
+    "assets/icons/ui/gift.png",
+    "assets/icons/ui/tree.png",
+    "assets/icons/ui/lock.png",
+    "assets/icons/ui/heart.png",
+    "assets/icons/ui/star.png",
+    "assets/icons/ui/chat.png",
     "assets/sfx/click.wav",
     "assets/sfx/open.wav",
     "assets/sfx/chime.wav",

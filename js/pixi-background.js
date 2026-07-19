@@ -8,7 +8,7 @@
 
 if (typeof PIXI !== "undefined") {
 
-    window.createFloatingHearts = function(){
+    window.createFloatingHearts = async function(){
 
         try {
 
@@ -26,27 +26,41 @@ if (typeof PIXI !== "undefined") {
 
             canvasHost.appendChild(app.view);
 
-            const symbols = ["💜", "✨", "💫"];
+            // اسپرایت‌های طراحی‌شده (به‌جای ایموجی سیستم) —
+            // هر سه با گلوی هماهنگ با پالت رنگی پروژه
+            const spriteSheets = [
+                "assets/images/particles/heart.png",
+                "assets/images/particles/sparkle.png",
+                "assets/images/particles/orb.png"
+            ];
+
+            const textures = await Promise.all(
+                spriteSheets.map(url => PIXI.Assets.load(url))
+            );
+
             const particles = [];
             const count = 22;
 
             for (let i = 0; i < count; i++){
 
-                const text = new PIXI.Text(
-                    symbols[i % symbols.length],
-                    { fontSize: 14 + Math.random() * 18 }
-                );
+                const tex = textures[i % textures.length];
+                const sprite = new PIXI.Sprite(tex);
 
-                text.alpha = 0.12 + Math.random() * 0.28;
-                text.x = Math.random() * app.screen.width;
-                text.y = app.screen.height + Math.random() * app.screen.height;
-                text.anchor.set(0.5);
+                const size = 14 + Math.random() * 20;
+                sprite.width = size;
+                sprite.height = size;
+
+                sprite.alpha = 0.14 + Math.random() * 0.30;
+                sprite.x = Math.random() * app.screen.width;
+                sprite.y = app.screen.height + Math.random() * app.screen.height;
+                sprite.anchor.set(0.5);
 
                 const speed = 10 + Math.random() * 14; // px/sec
                 const drift = (Math.random() - 0.5) * 8;
+                const rotSpeed = (Math.random() - 0.5) * 0.4;
 
-                particles.push({ sprite: text, speed, drift, driftPhase: Math.random()*Math.PI*2 });
-                app.stage.addChild(text);
+                particles.push({ sprite, speed, drift, rotSpeed, driftPhase: Math.random()*Math.PI*2 });
+                app.stage.addChild(sprite);
 
             }
 
@@ -61,6 +75,7 @@ if (typeof PIXI !== "undefined") {
                     p.sprite.y -= p.speed * dt;
                     p.driftPhase += dt * 0.8;
                     p.sprite.x += Math.sin(p.driftPhase) * p.drift * dt;
+                    p.sprite.rotation += p.rotSpeed * dt;
 
                     if (p.sprite.y < -30){
                         p.sprite.y = app.screen.height + 30;

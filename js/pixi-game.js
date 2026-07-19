@@ -103,7 +103,7 @@ if (typeof PIXI !== "undefined") {
         const cameraLayer = new PIXI.Container();
         app.stage.addChild(cameraLayer);
 
-        const basketText = new PIXI.Text("💜", { fontSize: 40 });
+        const basketText = new PIXI.Text("💜", { fontSize: 40, padding: 20, lineHeight: 60 });
         basketText.anchor.set(0.5, 1);
         cameraLayer.addChild(basketText);
 
@@ -231,7 +231,9 @@ if (typeof PIXI !== "undefined") {
             const type = rollEntityType();
 
             const glyph = entityGlyph(type);
-            const text = new PIXI.Text(glyph, { fontSize: type==="golden" ? 34 : 28 });
+            const fontSize = type==="golden" ? 34 : 28;
+
+            const text = new PIXI.Text(glyph, { fontSize, padding: Math.ceil(fontSize*0.5), lineHeight: Math.ceil(fontSize*1.5) });
             text.anchor.set(0.5);
 
             const x = 24 + Math.random()*(rect.width-48);

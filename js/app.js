@@ -74,7 +74,7 @@ function showSplash(){
 
     logo.className="splash-logo heartbeat";
 
-    logo.textContent="💜";
+    logo.innerHTML='<img class="splash-logo-img" src="assets/images/splash-heart.png" alt="Love OS">';
 
     logoWrap.appendChild(glow);
 

@@ -10,7 +10,7 @@
 const EVENTS_LIST = [
     {
         id: "seventh-month",
-        emoji: "💜",
+        icon: "assets/icons/ui/heart.png",
         title: "هفتمین ماهگرد",
         subtitle: "Seventh Month Anniversary",
         desc: "هدیه، نامه، خاطرات و یه سفر کوچیک مرور هفت ماه.",
@@ -19,7 +19,7 @@ const EVENTS_LIST = [
     },
     {
         id: "birthday",
-        emoji: "🎂",
+        icon: "assets/icons/ui/cake.png",
         title: "تولد",
         subtitle: "Birthday",
         desc: "یه رویداد ویژه برای روز تولد.",
@@ -27,7 +27,7 @@ const EVENTS_LIST = [
     },
     {
         id: "christmas",
-        emoji: "🎄",
+        icon: "assets/icons/ui/tree.png",
         title: "کریسمس",
         subtitle: "Christmas",
         desc: "جشن کریسمس، به‌زودی.",
@@ -35,7 +35,7 @@ const EVENTS_LIST = [
     },
     {
         id: "valentine",
-        emoji: "💘",
+        icon: "assets/icons/ui/star.png",
         title: "ولنتاین",
         subtitle: "Valentine",
         desc: "یه سورپرایز عاشقانه، به‌زودی.",
@@ -43,7 +43,7 @@ const EVENTS_LIST = [
     },
     {
         id: "new-event",
-        emoji: "✨",
+        icon: "assets/icons/ui/chat.png",
         title: "رویداد جدید",
         subtitle: "New Event",
         desc: "همیشه یه چیز جدید در راهه.",
@@ -59,7 +59,7 @@ function buildEventsSlot(){
 
     slot.setAttribute("aria-label", "رویدادها");
 
-    slot.innerHTML = `<span class="hub-slot-emoji">🎁</span>`;
+    slot.innerHTML = `<img class="hub-slot-icon-img" src="assets/icons/ui/gift.png" alt="" aria-hidden="true">`;
 
     slot.addEventListener("click", function(){
 
@@ -89,7 +89,7 @@ function openEventsOverlay(){
 
     title.className = "user-select-title";
 
-    title.textContent = "رویدادها 🎁";
+    title.textContent = "رویدادها";
 
     const list = document.createElement("div");
 
@@ -155,7 +155,11 @@ function buildEventCard(ev, overlay){
 
     iconWrap.className = "event-card-icon";
 
-    iconWrap.textContent = ev.emoji;
+    const iconImg = document.createElement("img");
+    iconImg.src = ev.icon;
+    iconImg.alt = "";
+    iconImg.setAttribute("aria-hidden", "true");
+    iconWrap.appendChild(iconImg);
 
     const textWrap = document.createElement("div");
 
@@ -203,7 +207,11 @@ function buildEventCard(ev, overlay){
 
         lockBadge.className = "event-card-lock-badge";
 
-        lockBadge.textContent = "🔒";
+        const lockImg = document.createElement("img");
+        lockImg.src = "assets/icons/ui/lock.png";
+        lockImg.alt = "";
+        lockImg.setAttribute("aria-hidden", "true");
+        lockBadge.appendChild(lockImg);
 
         lockBadge.setAttribute("aria-hidden", "true");
 
