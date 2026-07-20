@@ -45,7 +45,7 @@ function buildRelationshipSlot(){
     const days = getRelationshipDays();
 
     slot.innerHTML = `
-        <span class="hub-slot-emoji relationship-slot-emoji">❤️</span>
+        <img class="hub-slot-icon-img" src="assets/icons/ui/heart.png" alt="" aria-hidden="true">
         <span class="relationship-slot-days">${days}</span>
     `;
 

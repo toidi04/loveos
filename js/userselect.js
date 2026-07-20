@@ -11,13 +11,10 @@
 
 let currentUser = null;
 
-// نقطه‌ی چرخش آیتم (گل/گیتار) که با دست هرکاراکتر هماهنگه
-const ITEM_PIVOT = {
-    yasin: "70% 57%",
-    asal:  "52% 45%"
-};
 
 function showUserSelect(){
+
+    stopMainCharacterAnimation();
 
     const app = document.getElementById("app");
 
@@ -104,60 +101,80 @@ function selectUser(userKey, card, overlay){
   MAIN SCREEN (Hub)
 =========================================*/
 
-// نسخه‌ی DOM/CSS (fallback) از رندر شخصیت — وقتی PixiJS در دسترس نیست
-function buildDomCharacterLayers(charWrap, userKey){
+// ---------- کاراکتر صفحه‌ی اصلی: انیمیشن با فریم واقعی ----------
+// هر کاراکتر ۴ فریم عکسِ کامل داره (نه لایه‌ی جدا‌شده): حالت
+// استراحت، دو فریم نفس‌کشیدن، و یک فریم پلک‌زدن. به‌جای بریدن
+// عکس و چرخوندن تیکه‌هاش با کد (روشی که قبلا استفاده شده بود و
+// نتیجه‌ش بد بود)، این‌جا فقط src عکس رو عوض می‌کنیم - دقیقا مثل
+// یه انیمیشن گیف ساده و تمیز.
+const CHARACTER_FRAMES = {
+    rest:   "1-rest",
+    mid:    "2-breathe-mid",
+    peak:   "3-breathe-peak",
+    blink:  "4-blink"
+};
 
-    charWrap.classList.add("breathing");
+// ترتیب پخش فریم‌ها برای یک چرخه‌ی نفس‌کشیدنِ نرمِ رفت‌وبرگشتی
+const BREATHE_SEQUENCE = ["rest","mid","peak","mid"];
+const BREATHE_FRAME_MS = 340;   // سرعت هر فریم نفس (آروم و آرامش‌بخش)
+const BLINK_EVERY_MIN_MS = 2600;
+const BLINK_EVERY_MAX_MS = 5200;
+const BLINK_DURATION_MS = 120;
 
-    const charImg = document.createElement("img");
+let mainCharAnimTimer = null;
+let mainCharBlinkTimer = null;
 
-    charImg.className = "home-character";
+function stopMainCharacterAnimation(){
 
-    charImg.id = "mainCharacterImg";
+    if (mainCharAnimTimer){ clearInterval(mainCharAnimTimer); mainCharAnimTimer = null; }
+    if (mainCharBlinkTimer){ clearTimeout(mainCharBlinkTimer); mainCharBlinkTimer = null; }
 
-    charImg.src = `assets/characters/${userKey}.png`;
+}
 
-    charImg.alt = THEMES[userKey] ? THEMES[userKey].name : "";
+function buildCharacterSprite(charWrap, userKey){
 
-    const eyesImg = document.createElement("img");
+    stopMainCharacterAnimation();
 
-    eyesImg.className = "character-eyes";
+    const img = document.createElement("img");
 
-    eyesImg.id = "mainCharacterEyes";
+    img.className = "home-character-sprite";
+    img.id = "mainCharacterImg";
+    img.alt = THEMES[userKey] ? THEMES[userKey].name : "";
+    img.src = `assets/characters-v2/${userKey}-${CHARACTER_FRAMES.rest}.png`;
 
-    eyesImg.src = `assets/characters/${userKey}-eyes.png`;
+    charWrap.appendChild(img);
 
-    eyesImg.alt = "";
+    let seqIndex = 0;
+    let blinking = false;
 
-    const itemImg = document.createElement("img");
+    mainCharAnimTimer = setInterval(function(){
 
-    itemImg.className = "character-item";
+        if (blinking) return;
 
-    itemImg.id = "mainCharacterItem";
+        seqIndex = (seqIndex + 1) % BREATHE_SEQUENCE.length;
+        const frameKey = CHARACTER_FRAMES[BREATHE_SEQUENCE[seqIndex]];
+        img.src = `assets/characters-v2/${userKey}-${frameKey}.png`;
 
-    itemImg.src = `assets/characters/${userKey}-item.png`;
+    }, BREATHE_FRAME_MS);
 
-    itemImg.alt = "";
+    (function scheduleBlink(){
 
-    itemImg.style.transformOrigin = ITEM_PIVOT[userKey] || "60% 55%";
+        const delay = BLINK_EVERY_MIN_MS + Math.random()*(BLINK_EVERY_MAX_MS-BLINK_EVERY_MIN_MS);
 
-    const hairImg = document.createElement("img");
+        mainCharBlinkTimer = setTimeout(function(){
 
-    hairImg.className = "character-hair";
+            blinking = true;
+            img.src = `assets/characters-v2/${userKey}-${CHARACTER_FRAMES.blink}.png`;
 
-    hairImg.id = "mainCharacterHair";
+            setTimeout(function(){
+                blinking = false;
+                img.src = `assets/characters-v2/${userKey}-${CHARACTER_FRAMES[BREATHE_SEQUENCE[seqIndex]]}.png`;
+                scheduleBlink();
+            }, BLINK_DURATION_MS);
 
-    hairImg.src = `assets/characters/${userKey}-hair.png`;
+        }, delay);
 
-    hairImg.alt = "";
-
-    charWrap.appendChild(charImg);
-
-    charWrap.appendChild(itemImg);
-
-    charWrap.appendChild(hairImg);
-
-    charWrap.appendChild(eyesImg);
+    })();
 
 }
 
@@ -203,57 +220,13 @@ function showMainScreen(userKey){
 
     stage.className = "main-character-stage";
 
-    const pedestal = document.createElement("div");
-
-    pedestal.className = "character-pedestal";
-
     const charWrap = document.createElement("div");
 
     charWrap.className = "character-wrap";
 
     charWrap.id = "mainCharacterWrap";
 
-    if (typeof PixiCharacter !== "undefined" && PixiCharacter){
-
-        // ---- مسیر PixiJS: بدنه/مو/آیتم/چشم به‌صورت Sprite رندر می‌شن ----
-        try {
-
-            if (window.__pixiCharacterController){
-                window.__pixiCharacterController.destroy();
-                window.__pixiCharacterController = null;
-            }
-
-            const controller = PixiCharacter.mount(charWrap, userKey);
-
-            window.__pixiCharacterController = controller;
-
-            controller.ready.catch(()=>{
-
-                // لود تکسچرها fail شد (مثلا سرو نشدن از یه سرور واقعی)
-                // - بی‌صدا برمی‌گردیم به نسخه‌ی DOM/CSS
-                if (window.__pixiCharacterController === controller){
-
-                    controller.destroy();
-                    window.__pixiCharacterController = null;
-                    charWrap.innerHTML = "";
-                    buildDomCharacterLayers(charWrap, userKey);
-
-                }
-
-            });
-
-        } catch (err){
-
-            console.warn("PixiCharacter mount failed, falling back to DOM layers:", err);
-            buildDomCharacterLayers(charWrap, userKey);
-
-        }
-
-    } else {
-
-        buildDomCharacterLayers(charWrap, userKey);
-
-    }
+    buildCharacterSprite(charWrap, userKey);
 
     const greeting = document.createElement("p");
 
@@ -264,8 +237,6 @@ function showMainScreen(userKey){
     greeting.textContent = `سلام ${theme.name} 💜`;
 
     stage.appendChild(charWrap);
-
-    stage.appendChild(pedestal);
 
     stage.appendChild(greeting);
 
@@ -456,67 +427,20 @@ function openSettings(mainScreen){
 
             currentUser = opt.key;
 
-            if (window.__pixiCharacterController){
+            const charWrap = document.getElementById("mainCharacterWrap");
 
-                window.__pixiCharacterController.switchTo(opt.key);
+            if (charWrap){
 
-            } else {
+                const oldImg = charWrap.querySelector(".home-character-sprite");
 
-                const img = document.getElementById("mainCharacterImg");
+                if (oldImg) oldImg.classList.add("char-fade-out");
 
-                const eyesImg = document.getElementById("mainCharacterEyes");
+                setTimeout(()=>{
 
-                const itemImg = document.getElementById("mainCharacterItem");
+                    charWrap.innerHTML = "";
+                    buildCharacterSprite(charWrap, opt.key);
 
-                const hairImg = document.getElementById("mainCharacterHair");
-
-                if(img){
-
-                    img.classList.add("char-fade-out");
-
-                    if(eyesImg) eyesImg.classList.add("char-fade-out");
-
-                    if(itemImg) itemImg.classList.add("char-fade-out");
-
-                    if(hairImg) hairImg.classList.add("char-fade-out");
-
-                    setTimeout(()=>{
-
-                        img.src = `assets/characters/${opt.key}.png`;
-
-                        img.alt = THEMES[opt.key].name;
-
-                        img.classList.remove("char-fade-out");
-
-                        if(eyesImg){
-
-                            eyesImg.src = `assets/characters/${opt.key}-eyes.png`;
-
-                            eyesImg.classList.remove("char-fade-out");
-
-                        }
-
-                        if(itemImg){
-
-                            itemImg.src = `assets/characters/${opt.key}-item.png`;
-
-                            itemImg.style.transformOrigin = ITEM_PIVOT[opt.key] || "60% 55%";
-
-                            itemImg.classList.remove("char-fade-out");
-
-                        }
-
-                        if(hairImg){
-
-                            hairImg.src = `assets/characters/${opt.key}-hair.png`;
-
-                            hairImg.classList.remove("char-fade-out");
-
-                        }
-
-                    },250);
-
-                }
+                }, 250);
 
             }
 

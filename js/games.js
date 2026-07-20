@@ -30,6 +30,8 @@ const GAMES_LIST = [
 
 function showGamesScreen(){
 
+    if (typeof stopMainCharacterAnimation === "function") stopMainCharacterAnimation();
+
     const app = document.getElementById("app");
 
     app.innerHTML = "";

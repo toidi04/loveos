@@ -43,18 +43,62 @@ const RUNNER_CONFIG = {
 
 };
 
+// ---------- پالت روز/غروب/شب: مشترک بین موتور Pixi و موتور DOM ----------
+const DAY_PALETTES = [
+    { t:0.00, sky1:[42,20,74],  sky2:[76,42,134], tint:[0,0,0],       tintA:0.0,  sun:true  },
+    { t:0.28, sky1:[90,40,60],  sky2:[220,140,80],tint:[255,140,60],  tintA:0.14, sun:true  },
+    { t:0.42, sky1:[18,10,30],  sky2:[40,20,64],  tint:[20,10,40],    tintA:0.30, sun:false },
+    { t:0.85, sky1:[30,16,54],  sky2:[70,38,110], tint:[60,30,90],    tintA:0.10, sun:false },
+    { t:1.00, sky1:[42,20,74],  sky2:[76,42,134], tint:[0,0,0],       tintA:0.0,  sun:true  }
+];
+
+function lerp(a,b,t){ return a+(b-a)*t; }
+
+function samplePalette(t){
+
+    for(let i=0;i<DAY_PALETTES.length-1;i++){
+
+        const p0 = DAY_PALETTES[i], p1 = DAY_PALETTES[i+1];
+
+        if(t>=p0.t && t<=p1.t){
+
+            const local = (t-p0.t)/Math.max(0.0001,(p1.t-p0.t));
+
+            return {
+                sky1: p0.sky1.map((v,i2)=> lerp(v,p1.sky1[i2],local)),
+                sky2: p0.sky2.map((v,i2)=> lerp(v,p1.sky2[i2],local)),
+                tint: p0.tint.map((v,i2)=> lerp(v,p1.tint[i2],local)),
+                tintA: lerp(p0.tintA, p1.tintA, local),
+                sun: local < 0.5 ? p0.sun : p1.sun
+            };
+
+        }
+
+    }
+
+    return DAY_PALETTES[0];
+
+}
+
+function rgbCss(arr){
+    return `rgb(${Math.round(arr[0])},${Math.round(arr[1])},${Math.round(arr[2])})`;
+}
+
+function rgbHex(arr){
+    return (Math.round(arr[0])<<16) + (Math.round(arr[1])<<8) + Math.round(arr[2]);
+}
+
 let runnerState = null;
 let runnerApp = null;
 
 function startRunner(){
 
-    if (typeof PIXI === "undefined"){
-
-        showGamesScreen();
-
-        return;
-
-    }
+    // نکته‌ی مهم (رفع باگ): قبلا اگه PixiJS لود نشده بود
+    // (مثلا CDN کند/مسدود بود یا آفلاین بودیم)، این تابع بی‌سروصدا
+    // کاربر رو به صفحه‌ی بازی‌ها برمی‌گردوند - انگار "دکمه کار نمی‌کنه".
+    // الان دیگه به PixiJS وابسته نیست: صفحه‌ی معرفی همیشه باز می‌شه،
+    // و launchRunner خودش تصمیم می‌گیره از موتور Pixi استفاده کنه یا
+    // از نسخه‌ی DOM/CSS (fallback) - دقیقا هم‌الگو با game.js/pixi-game.js.
 
     const app = document.getElementById("app");
 
@@ -260,7 +304,29 @@ function launchRunner(screen){
 
     };
 
-    buildRunnerPixi(area, screen, sky);
+    // اگه PixiJS در دسترس باشه از موتور کامل (پارالاکس/آب‌وهوا/شب‌وروز)
+    // استفاده می‌کنیم؛ وگرنه (یا اگه به هر دلیلی موقع اجرا خطا داد)
+    // به نسخه‌ی سبک DOM/CSS برمی‌گردیم که کاملا مستقل از PixiJS
+    // بازی رو قابل‌بازی نگه می‌داره - همون الگوی fallback که تو کل
+    // برنامه (کاراکتر اصلی، بازی ۷ قلب طلایی) استفاده شده.
+    if (typeof PIXI !== "undefined"){
+
+        try {
+
+            buildRunnerPixi(area, screen, sky);
+
+        } catch (err){
+
+            console.warn("Runner Pixi engine failed, falling back to DOM engine:", err);
+            buildRunnerDom(area, screen, sky);
+
+        }
+
+    } else {
+
+        buildRunnerDom(area, screen, sky);
+
+    }
 
 }
 
@@ -912,51 +978,9 @@ function buildRunnerPixi(area, screen, sky){
 
     }
 
-    // ---------- چرخه‌ی روز/شب ----------
-    const DAY_PALETTES = [
-        { t:0.00, sky1:[42,20,74],  sky2:[76,42,134], tint:[0,0,0],       tintA:0.0,  sun:true  },
-        { t:0.28, sky1:[90,40,60],  sky2:[220,140,80],tint:[255,140,60],  tintA:0.14, sun:true  },
-        { t:0.42, sky1:[18,10,30],  sky2:[40,20,64],  tint:[20,10,40],    tintA:0.30, sun:false },
-        { t:0.85, sky1:[30,16,54],  sky2:[70,38,110], tint:[60,30,90],    tintA:0.10, sun:false },
-        { t:1.00, sky1:[42,20,74],  sky2:[76,42,134], tint:[0,0,0],       tintA:0.0,  sun:true  }
-    ];
-
-    function lerp(a,b,t){ return a+(b-a)*t; }
-
-    function samplePalette(t){
-
-        for(let i=0;i<DAY_PALETTES.length-1;i++){
-
-            const p0 = DAY_PALETTES[i], p1 = DAY_PALETTES[i+1];
-
-            if(t>=p0.t && t<=p1.t){
-
-                const local = (t-p0.t)/Math.max(0.0001,(p1.t-p0.t));
-
-                return {
-                    sky1: p0.sky1.map((v,i2)=> lerp(v,p1.sky1[i2],local)),
-                    sky2: p0.sky2.map((v,i2)=> lerp(v,p1.sky2[i2],local)),
-                    tint: p0.tint.map((v,i2)=> lerp(v,p1.tint[i2],local)),
-                    tintA: lerp(p0.tintA, p1.tintA, local),
-                    sun: local < 0.5 ? p0.sun : p1.sun
-                };
-
-            }
-
-        }
-
-        return DAY_PALETTES[0];
-
-    }
-
-    function rgbCss(arr){
-        return `rgb(${Math.round(arr[0])},${Math.round(arr[1])},${Math.round(arr[2])})`;
-    }
-
-    function rgbHex(arr){
-        return (Math.round(arr[0])<<16) + (Math.round(arr[1])<<8) + Math.round(arr[2]);
-    }
-
+    // ---------- چرخه‌ی روز/شب (تعریف کامل DAY_PALETTES و توابعش
+    // بالای فایل، بیرون از این تابع، تا buildRunnerDom هم بتونه
+    // همون گرادیان‌های آسمون رو استفاده کنه) ----------
     let lastPaletteSunState = true;
 
     function updateDayNight(){
@@ -1085,6 +1109,212 @@ function buildRunnerPixi(area, screen, sky){
     });
 
     rollWeather();
+
+}
+
+/* ---------------------------------------------------------
+   موتور جایگزین DOM/CSS — وقتی PixiJS در دسترس نیست (لود
+   نشدن CDN، آفلاین بودن، یا هر خطای دیگه). بدون Canvas/WebGL،
+   فقط با <div>های معمولی و requestAnimationFrame ساخته شده،
+   پس هیچ‌وقت باعث "وارد بازی نمیشه" نمی‌شه. قوانین بازی (فیزیک
+   پرش، سرعت فزاینده، امتیاز، لیدربورد) دقیقا همونیه که موتور
+   Pixi داره؛ فقط گرافیک ساده‌تره (بدون پارالاکس/آب‌وهوای ذره‌ای).
+--------------------------------------------------------- */
+function buildRunnerDom(area, screen, sky){
+
+    let rafId = null;
+    let lastTime = null;
+
+    const themeForDom = (typeof THEMES !== "undefined" && THEMES[currentUser]) ? THEMES[currentUser] : null;
+    const domOutfit = (themeForDom && themeForDom.primary) || "#6366F1";
+    const domHair   = (themeForDom && themeForDom.secondary) || "#F59E0B";
+
+    // ---------- زمین ----------
+    const ground = document.createElement("div");
+    ground.className = "runner-dom-ground";
+    area.appendChild(ground);
+
+    // ---------- کاراکتر ----------
+    const charEl = document.createElement("div");
+    charEl.className = "runner-dom-char";
+    charEl.style.setProperty("--char-outfit", domOutfit);
+    charEl.style.setProperty("--char-hair", domHair);
+    charEl.innerHTML = `
+        <span class="runner-dom-char-hair"></span>
+        <span class="runner-dom-char-head"></span>
+        <span class="runner-dom-char-torso"></span>
+        <span class="runner-dom-char-leg runner-dom-char-leg-back"></span>
+        <span class="runner-dom-char-leg runner-dom-char-leg-front"></span>
+    `;
+    area.appendChild(charEl);
+
+    charEl.style.left = RUNNER_CONFIG.charX + "px";
+
+    // ---------- فیزیک پرش (همون ثابت‌های RUNNER_CONFIG) ----------
+    const physics = { y:0, vy:0, onGround:true, squash:1 };
+
+    function doJumpDom(){
+        if(!runnerState || !runnerState.running) return;
+        if(!physics.onGround) return;
+        physics.vy = RUNNER_CONFIG.jumpVelocity;
+        physics.onGround = false;
+        SFX.play("click", 0.4);
+    }
+
+    area.addEventListener("pointerdown", doJumpDom);
+
+    // ---------- موانع ----------
+    const OBSTACLE_GLYPH = { rock:"🪨", bush:"🌳", heart:"💗" };
+    const obstacleEls = [];
+
+    function spawnObstacleDom(){
+
+        const type = RUNNER_CONFIG.obstacleTypes[Math.floor(Math.random()*RUNNER_CONFIG.obstacleTypes.length)];
+
+        const el = document.createElement("div");
+        el.className = "runner-dom-obstacle runner-dom-obstacle-" + type;
+        el.textContent = OBSTACLE_GLYPH[type] || "🪨";
+
+        const areaWidth = area.clientWidth || 320;
+        el.style.left = areaWidth + 40 + "px";
+
+        if(type === "heart") el.classList.add("runner-dom-obstacle-floating");
+
+        area.appendChild(el);
+
+        const size = type === "heart" ? 26 : (type === "bush" ? 40 : 34);
+
+        runnerState.obstacles.push({ el, type, x: areaWidth+40, w:size, h:size });
+
+    }
+
+    function updateObstaclesDom(dx){
+
+        runnerState.obstacles.forEach(ob=>{
+            ob.x -= dx;
+            ob.el.style.left = ob.x + "px";
+        });
+
+        runnerState.obstacles = runnerState.obstacles.filter(ob=>{
+            if(ob.x < -60){
+                ob.el.remove();
+                return false;
+            }
+            return true;
+        });
+
+    }
+
+    function checkCollisionsDom(){
+
+        const charBox = { x: RUNNER_CONFIG.charX - 18, y: physics.y - 4, w: 36, h: 76 };
+
+        for(const ob of runnerState.obstacles){
+
+            const floatY = ob.type === "heart" ? 46 : 0;
+            const obBox = { x: ob.x - ob.w/2, y: floatY - ob.h/2 + ob.h/2, w: ob.w, h: ob.h };
+
+            // مختصات y موانع رو نسبت به زمین (پایین صفحه) می‌سنجیم،
+            // پس با ارتفاع فعلی کاراکتر (physics.y از زمین) مقایسه می‌کنیم
+            const obTop = ob.type === "heart" ? 46 - ob.h/2 : 0;
+            const obBottom = ob.type === "heart" ? 46 + ob.h/2 : ob.h;
+
+            const overlapX = (RUNNER_CONFIG.charX - 18) < (ob.x + ob.w/2) && (RUNNER_CONFIG.charX + 18) > (ob.x - ob.w/2);
+            const overlapY = physics.y < obBottom && (physics.y + 76) > obTop;
+
+            if(overlapX && overlapY) return true;
+
+        }
+
+        return false;
+
+    }
+
+    // ---------- چرخه‌ی روز/شب ساده (از پالت مشترک) ----------
+    function updateDayNightDom(){
+
+        const cyclePos = (runnerState.distance % RUNNER_CONFIG.dayCycleDistance) / RUNNER_CONFIG.dayCycleDistance;
+        const pal = samplePalette(cyclePos);
+        sky.style.background = `linear-gradient(180deg, ${rgbCss(pal.sky1)} 0%, ${rgbCss(pal.sky2)} 100%)`;
+
+    }
+
+    // ---------- HUD ----------
+    function updateHudDom(){
+        const scoreVal = document.getElementById("runnerScoreVal");
+        if(scoreVal) scoreVal.textContent = Math.floor(runnerState.distance);
+    }
+
+    let runPhase = 0;
+
+    function endRunnerDom(){
+        cancelAnimationFrame(rafId);
+        endRunner(screen, { destroy(){ cancelAnimationFrame(rafId); } });
+    }
+
+    function frame(now){
+
+        if(!runnerState || !runnerState.running) return;
+
+        rafId = requestAnimationFrame(frame);
+
+        if(lastTime === null) lastTime = now;
+        let dt = (now-lastTime)/1000;
+        dt = Math.min(dt, 0.05);
+        lastTime = now;
+
+        const speedT = Math.min(1, runnerState.distance / RUNNER_CONFIG.speedRampDistance);
+        runnerState.speed = RUNNER_CONFIG.speedStart + (RUNNER_CONFIG.speedMax-RUNNER_CONFIG.speedStart)*speedT;
+
+        const dx = runnerState.speed*dt;
+        runnerState.distance += dx*0.12;
+
+        // فیزیک پرش
+        if(!physics.onGround){
+            physics.vy += RUNNER_CONFIG.gravity*dt;
+            physics.y -= physics.vy*dt;
+            if(physics.y <= 0){
+                physics.y = 0;
+                physics.vy = 0;
+                physics.squash = 1.22;
+                physics.onGround = true;
+            }
+        }
+        physics.squash += (1-physics.squash)*Math.min(1, dt*14);
+
+        runPhase += dt * (physics.onGround ? 9 : 0);
+        const bob = physics.onGround ? Math.sin(runPhase)*3 : 0;
+
+        charEl.style.transform =
+            `translateY(${-physics.y - bob}px) scaleX(${physics.onGround?physics.squash:1}) scaleY(${physics.onGround?(2-physics.squash):1})`;
+        charEl.classList.toggle("runner-dom-char-air", !physics.onGround);
+        charEl.classList.toggle("runner-dom-char-running", physics.onGround);
+        charEl.style.setProperty("--run-phase", runPhase.toFixed(2));
+
+        updateObstaclesDom(dx);
+        updateDayNightDom();
+        updateHudDom();
+
+        runnerState.lastSpawnAt += dt*1000;
+
+        const gapT = Math.min(1, runnerState.distance / RUNNER_CONFIG.speedRampDistance);
+        const currentGap = RUNNER_CONFIG.spawnGapStart - (RUNNER_CONFIG.spawnGapStart-RUNNER_CONFIG.spawnGapMin)*gapT;
+
+        if(runnerState.lastSpawnAt >= currentGap){
+            runnerState.lastSpawnAt = 0;
+            spawnObstacleDom();
+        }
+
+        if(checkCollisionsDom()){
+            SFX.play("bad", 0.3);
+            area.classList.add("game-area-shake");
+            setTimeout(()=> area.classList.remove("game-area-shake"), 400);
+            endRunnerDom();
+        }
+
+    }
+
+    rafId = requestAnimationFrame(frame);
 
 }
 
