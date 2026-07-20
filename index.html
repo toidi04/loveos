@@ -19,6 +19,14 @@
 
     <title>Love OS 💜</title>
 
+    <!-- فونت Vazirmatn توی CSS تعریف شده بود ولی هیچ‌وقت واقعا لود
+         نمی‌شد (لینکش جا افتاده بود) - برای همین همیشه با فونت
+         عمومی سیستم نمایش داده می‌شد، نه فونت قشنگ و برندی که
+         قرار بود باشه. این‌جا واقعا لودش می‌کنیم. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link rel="manifest" href="manifest.json">
 
     <link rel="icon" href="assets/icons/icon-192.png">
@@ -35,9 +43,29 @@
 
     <main id="app"></main>
 
-    <!-- PixiJS: لود از CDN. اگه آفلاین باشه و لود نشه، برنامه
-         خودکار به نسخه‌ی CSS/DOM قبلی (fallback) برمی‌گرده -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js"></script>
+    <!-- PixiJS: لود از CDN. سه منبع مختلف امتحان می‌شه (هرکدوم شکست
+         بخوره - مسدود بودن، کند بودن، قطعی - بعدی رو امتحان می‌کنه)
+         چون بعضی از دستگاه‌ها به بعضی از CDNها دسترسی ندارن. اگه در
+         نهایت هیچ‌کدوم لود نشه، برنامه خودکار به نسخه‌ی CSS/DOM
+         قبلی (fallback) برمی‌گرده - نه این‌که فریز کنه یا کاری از
+         بازی‌ها کار نکنه (رجوع کن به runner.js / pixi-game.js).
+         نکته: کاراکتر اصلی دیگه اصلا به PixiJS وابسته نیست - با
+         تعویض فریم‌های عکس (sprite frames) ساده در userselect.js
+         انیمیت می‌شه، پس هیچ‌وقت گیر بارگذاری این کتابخونه نمی‌افته -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js" onerror="this.dataset.failed=1"></script>
+    <script>
+        if (document.currentScript.previousElementSibling.dataset.failed){
+            document.write('<script src="https://cdn.jsdelivr.net/npm/pixi.js@7.4.2/dist/pixi.min.js" onerror="this.dataset.failed=1"><\/script>');
+        }
+    </script>
+    <script>
+        (function(){
+            const prev = document.currentScript.previousElementSibling;
+            if (typeof PIXI === "undefined" && prev && prev.dataset && prev.dataset.failed){
+                document.write('<script src="https://unpkg.com/pixi.js@7.4.2/dist/pixi.min.js"><\/script>');
+            }
+        })();
+    </script>
 
     <script src="js/config.js"></script>
     <script src="js/sfx.js"></script>
@@ -47,7 +75,6 @@
     <script src="js/relationship.js"></script>
     <script src="js/events.js"></script>
     <script src="js/pixi-background.js"></script>
-    <script src="js/pixi-character.js"></script>
     <script src="js/games.js"></script>
 
     <script src="js/intro.js"></script>
