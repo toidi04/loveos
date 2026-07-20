@@ -1,4 +1,12 @@
-const CACHE_NAME = "love-os-v1-44-0-visuals";
+// نسخه رو عوض کردیم (M9 -> M10): بازطراحی کامل صفحه‌ی اصلی -
+// کاراکترهای جدید (sprite frame به‌جای لایه‌ی جدا‌شده)، بک‌گراند
+// جدید، دکمه/آیکون‌های جدید، و حذف pixi-character.js. بدون این
+// تغییر نسخه، کسایی که قبلا PWA رو نصب کرده بودن همچنان نسخه‌ی
+// قدیمی/کش‌شده رو می‌دیدن.
+// M10 -> M11: همون فایل‌ها بازپردازش شدن (رد رنگ بنفش پاک شد،
+// برش‌ها تمیزتر شدن) - اسم فایل‌ها عوض نشده پس بدون بالا بردن
+// نسخه، کش قدیمی همون نسخه‌ی با رد بنفش رو سرو می‌کرد
+const CACHE_NAME = "love-os-v1-44-0-visuals-m11";
 
 const APP_SHELL = [
     "./",
@@ -13,7 +21,6 @@ const APP_SHELL = [
     "js/relationship.js",
     "js/events.js",
     "js/pixi-background.js",
-    "js/pixi-character.js",
     "js/games.js",
     "js/intro.js",
     "js/gift.js",
@@ -24,14 +31,17 @@ const APP_SHELL = [
     "js/runner.js",
     "js/ending.js",
     "manifest.json",
-    "assets/characters/asal.png",
-    "assets/characters/asal-eyes.png",
-    "assets/characters/asal-hair.png",
-    "assets/characters/asal-item.png",
-    "assets/characters/yasin.png",
-    "assets/characters/yasin-eyes.png",
-    "assets/characters/yasin-hair.png",
-    "assets/characters/yasin-item.png",
+    "assets/characters-v2/asal-1-rest.png",
+    "assets/characters-v2/asal-2-breathe-mid.png",
+    "assets/characters-v2/asal-3-breathe-peak.png",
+    "assets/characters-v2/asal-4-blink.png",
+    "assets/characters-v2/yasin-1-rest.png",
+    "assets/characters-v2/yasin-2-breathe-mid.png",
+    "assets/characters-v2/yasin-3-breathe-peak.png",
+    "assets/characters-v2/yasin-4-blink.png",
+    "assets/ui/adventure-btn-normal.png",
+    "assets/ui/adventure-btn-pressed.png",
+    "assets/images/main-bg.png",
     "assets/icons/icon-192.png",
     "assets/icons/icon-512.png",
     "assets/images/splash-heart.png",
@@ -45,6 +55,7 @@ const APP_SHELL = [
     "assets/icons/ui/heart.png",
     "assets/icons/ui/star.png",
     "assets/icons/ui/chat.png",
+    "assets/icons/ui/slot-frame.png",
     "assets/sfx/click.wav",
     "assets/sfx/open.wav",
     "assets/sfx/chime.wav",
@@ -103,12 +114,39 @@ self.addEventListener("activate", event => {
 
 // اول از کش بخون، اگه نبود از شبکه بگیر
 // (برای عکس‌هایی که بعدا اضافه می‌کنی هم کار می‌کنه)
+//
+// نکته‌ی مهم (رفع باگ کوچیک): قبلا وقتی یه فایل از شبکه با
+// موفقیت می‌اومد، توی کش ذخیره نمی‌شد - یعنی مثلا اسکریپت
+// PixiJS که از CDN میاد (و اصلا جزو APP_SHELL نیست) هیچ‌وقت
+// برای استفاده‌ی آفلاین بعدی کش نمی‌شد. الان هر پاسخ موفق GET
+// (هم‌مبدا یا cross-origin) رو هم توی کش می‌ذاریم تا دفعه‌ی بعد
+// حتی بدون اینترنت هم در دسترس باشه.
 self.addEventListener("fetch", event => {
 
+    if (event.request.method !== "GET") return;
+
     event.respondWith(
+
         caches.match(event.request).then(cached => {
-            return cached || fetch(event.request).catch(() => cached);
+
+            const network = fetch(event.request).then(response => {
+
+                if (response && (response.ok || response.type === "opaque")){
+
+                    const clone = response.clone();
+
+                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone)).catch(()=>{});
+
+                }
+
+                return response;
+
+            }).catch(() => cached);
+
+            return cached || network;
+
         })
+
     );
 
 });
