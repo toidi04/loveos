@@ -1721,12 +1721,14 @@ HOME SCREEN
 
     position:relative;
 
-    width:min(58vw, 220px, 28vh);
+    width:min(68vw, 270px, 34vh);
 
     line-height:0;
 }
 
-.home-character{
+/* کاراکتر صفحه‌ی اصلی: یک عکس ساده که src ش عوض می‌شه
+   (نفس‌کشیدن/پلک‌زدن = فریم واقعی، نه چرخوندن تیکه‌های بریده‌شده) */
+.home-character-sprite{
 
     width:100%;
 
@@ -1738,89 +1740,7 @@ HOME SCREEN
 
     image-rendering:crisp-edges;
 
-    filter:drop-shadow(0 10px 24px rgba(139,47,217,.45));
-}
-
-.character-item{
-
-    position:absolute;
-
-    inset:0;
-
-    width:100%;
-
-    height:100%;
-
-    image-rendering:pixelated;
-
-    image-rendering:crisp-edges;
-
-    animation:itemSway 4.5s ease-in-out infinite;
-}
-
-@keyframes itemSway{
-
-    0%,100%{ transform:rotate(0deg); }
-    50%{ transform:rotate(3deg); }
-}
-
-.character-hair{
-
-    position:absolute;
-
-    inset:0;
-
-    width:100%;
-
-    height:100%;
-
-    image-rendering:pixelated;
-
-    image-rendering:crisp-edges;
-
-    transform-origin:50% 8%;
-
-    animation:hairSway 5.5s ease-in-out infinite;
-}
-
-@keyframes hairSway{
-
-    0%,100%{ transform:rotate(0deg); }
-    50%{ transform:rotate(-1.2deg); }
-}
-
-.character-eyes{
-
-    position:absolute;
-
-    inset:0;
-
-    width:100%;
-
-    height:100%;
-
-    image-rendering:pixelated;
-
-    image-rendering:crisp-edges;
-
-    transform-origin:50% 55%;
-
-    animation:eyeLife 7s ease-in-out infinite;
-}
-
-/* پلک‌زدن + نگاه کردن به اطراف، ترکیب‌شده توی یه چرخه‌ی طبیعی */
-@keyframes eyeLife{
-
-    0%,4%      { transform:translateX(0) scaleY(1); }
-    6%         { transform:translateX(0) scaleY(0.08); }
-    8%,34%     { transform:translateX(0) scaleY(1); }
-    40%,54%    { transform:translateX(3%) scaleY(1); }
-    57%        { transform:translateX(3%) scaleY(0.08); }
-    59%,68%    { transform:translateX(3%) scaleY(1); }
-    74%,88%    { transform:translateX(-3%) scaleY(1); }
-    92%        { transform:translateX(0) scaleY(1); }
-    95%        { transform:translateX(0) scaleY(0.08); }
-    97%,100%   { transform:translateX(0) scaleY(1); }
+    filter:drop-shadow(0 14px 20px rgba(0,0,0,.5));
 }
 
 .char-fade-out{
@@ -1833,57 +1753,82 @@ HOME SCREEN
     to{ opacity:0; }
 }
 
-.breathing{
-
-    animation:breathe 3.2s ease-in-out infinite;
-
-}
-
-@keyframes breathe{
-
-    0%,100%{
-
-        transform:translateY(0) scale(1);
-
-    }
-
-    50%{
-
-        transform:translateY(-4px) scale(1.015);
-
-    }
-
-}
-
 .home-greeting{
 
-    margin-top:10px;
+    margin-top:14px;
 
-    font-size:1.1rem;
+    font-size:1rem;
 
-    color:var(--purple-light);
+    color:#fff8ec;
 
-    font-weight:600;
+    font-weight:700;
 
     transition:opacity .25s ease;
+
+    display:inline-block;
+
+    padding:9px 22px;
+
+    background:linear-gradient(155deg, rgba(60,32,90,.92), rgba(35,18,56,.92));
+
+    border:2px solid rgba(255,209,142,.55);
+
+    text-shadow:0 2px 3px rgba(0,0,0,.6);
+
+    letter-spacing:.3px;
+
+    /* گوشه‌های پله‌ای پیکسلی به‌جای گرد - چون فونت پیکسلی فارسی
+       عملا وجود نداره، این حس "پیکسل‌آرت" رو با شکل قاب می‌سازیم */
+    clip-path:polygon(
+        0 6px, 6px 6px, 6px 0, calc(100% - 6px) 0, calc(100% - 6px) 6px, 100% 6px,
+        100% calc(100% - 6px), calc(100% - 6px) calc(100% - 6px), calc(100% - 6px) 100%,
+        6px 100%, 6px calc(100% - 6px), 0 calc(100% - 6px)
+    );
+
+    box-shadow:0 6px 14px rgba(0,0,0,.45);
 }
 
 .adventure-btn{
 
     position:relative;
 
-    overflow:hidden;
+    overflow:visible;
 
-    padding:18px 46px;
+    display:flex;
 
-    font-size:1.15rem;
+    align-items:center;
 
-    border-radius:24px;
+    justify-content:center;
 
-    background:linear-gradient(135deg, var(--purple), var(--purple-light));
+    height:clamp(52px, 15vw, 66px);
 
-    box-shadow:0 10px 30px rgba(139,47,217,.5);
+    width:calc(clamp(52px, 15vw, 66px) * 2.91);
 
+    max-width:64vw;
+
+    padding:0 14px;
+
+    font-size:1.05rem;
+
+    color:#fff;
+
+    text-shadow:0 2px 4px rgba(0,0,0,.7);
+
+    border-radius:0;
+
+    background-image:url("../assets/ui/adventure-btn-normal.png");
+
+    background-size:contain;
+
+    background-repeat:no-repeat;
+
+    background-position:center;
+
+    box-shadow:none;
+
+    image-rendering:pixelated;
+
+    image-rendering:crisp-edges;
 }
 
 .adventure-btn-pressed{
@@ -1896,23 +1841,14 @@ HOME SCREEN
 
     0%{
 
-        box-shadow:0 10px 30px rgba(139,47,217,.5);
+        background-image:url("../assets/ui/adventure-btn-normal.png");
 
     }
 
-    50%{
+    40%,100%{
 
-        box-shadow:0 0 55px rgba(201,169,255,1);
-
-        transform:scale(.95);
-
-    }
-
-    100%{
-
-        opacity:.85;
-
-        transform:scale(.92);
+        background-image:url("../assets/ui/adventure-btn-pressed.png");
+        transform:scale(.96);
 
     }
 
@@ -1967,6 +1903,14 @@ MAIN SCREEN (Hub) — Clash Royale style
     min-height:0;
 
     overflow:hidden;
+
+    background-image:url("../assets/images/main-bg.png");
+
+    background-size:cover;
+
+    background-position:center bottom;
+
+    background-repeat:no-repeat;
 }
 
 .main-topbar{
@@ -1991,9 +1935,13 @@ MAIN SCREEN (Hub) — Clash Royale style
     opacity:.85;
 
     letter-spacing:.5px;
+
+    text-shadow:0 2px 6px rgba(0,0,0,.6);
 }
 
 .main-character-stage{
+
+    position:relative;
 
     flex:1;
 
@@ -2014,21 +1962,47 @@ MAIN SCREEN (Hub) — Clash Royale style
     overflow:hidden;
 }
 
-.character-pedestal{
+/* بک‌گراند و کاراکتر دو تا عکس جدا از هم تولید شدن، پس رنگ‌شون
+   ۱۰۰٪ ست نیست. این گرادیان نرم، هردو رو زیر یه نور گرم مشترک
+   می‌بره تا حس چسبیده/جدا بودن کمتر بشه */
+.main-character-stage::before{
 
-    width:min(58vw, 230px);
+    content:"";
 
-    height:34px;
+    position:absolute;
 
-    margin-top:-22px;
+    inset:0;
 
-    border-radius:50%;
+    pointer-events:none;
 
-    background:radial-gradient(ellipse at center, var(--purple-light) 0%, rgba(0,0,0,0) 72%);
+    background:radial-gradient(ellipse 70% 55% at 50% 62%, rgba(255,187,110,.16), transparent 70%),
+               linear-gradient(180deg, rgba(20,10,32,.12) 0%, transparent 25%, transparent 70%, rgba(10,6,18,.35) 100%);
 
-    opacity:.55;
+    z-index:1;
+}
 
-    filter:blur(1px);
+/* سایه‌ی تماس زیر پای کاراکتر - بدون این، انگار روی هوا وایساده */
+.character-wrap::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:50%;
+
+    bottom:2%;
+
+    width:62%;
+
+    height:10%;
+
+    transform:translateX(-50%);
+
+    background:radial-gradient(ellipse at center, rgba(0,0,0,.55) 0%, transparent 72%);
+
+    filter:blur(2px);
+
+    z-index:-1;
 }
 
 .main-bottom-bar{
@@ -2056,17 +2030,25 @@ MAIN SCREEN (Hub) — Clash Royale style
 
     position:relative;
 
-    width:clamp(40px, 12vw, 50px);
+    width:clamp(56px, 16vw, 70px);
 
-    height:clamp(40px, 12vw, 50px);
+    height:clamp(56px, 16vw, 70px);
 
     flex-shrink:0;
 
-    border-radius:16px;
+    border-radius:0;
 
-    background:rgba(255,255,255,0.06);
+    background:transparent;
 
-    border:1px solid rgba(255,255,255,0.12);
+    background-image:url("../assets/icons/ui/slot-frame.png");
+
+    background-size:contain;
+
+    background-repeat:no-repeat;
+
+    background-position:center;
+
+    border:none;
 
     display:flex;
 
@@ -2081,6 +2063,10 @@ MAIN SCREEN (Hub) — Clash Royale style
     opacity:.55;
 
     transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+
+    image-rendering:pixelated;
+
+    image-rendering:crisp-edges;
 }
 
 .hub-slot:hover{
@@ -2159,11 +2145,9 @@ MAIN SCREEN (Hub) — Clash Royale style
 
     transform:translateY(-12px);
 
-    padding:14px clamp(18px, 6vw, 30px);
-
     font-size:clamp(0.9rem, 4vw, 1.05rem);
 
-    flex-shrink:1;
+    flex-shrink:0;
 
     white-space:nowrap;
 }
@@ -2589,10 +2573,6 @@ SETTINGS PANEL
 
     opacity:1;
 
-    background:linear-gradient(155deg, rgba(255,255,255,.14), rgba(255,255,255,.03));
-
-    border-color:rgba(244,114,182,.35);
-
     gap:1px;
 
     flex-direction:column;
@@ -2786,10 +2766,6 @@ SETTINGS PANEL
     filter:none;
 
     opacity:1;
-
-    background:linear-gradient(155deg, rgba(255,255,255,.14), rgba(255,255,255,.03));
-
-    border-color:rgba(255,209,102,.35);
 }
 
 .events-slot .hub-slot-emoji,
@@ -2942,8 +2918,8 @@ SETTINGS PANEL
 }
 
 .hub-slot-icon-img{
-    width:56%;
-    height:56%;
+    width:74%;
+    height:74%;
 }
 
 .event-card-text{
@@ -3264,6 +3240,111 @@ SETTINGS PANEL
     width:100% !important;
 
     height:100% !important;
+}
+
+/* ==========================================
+   RUNNER — موتور جایگزین DOM/CSS
+   (وقتی PixiJS در دسترس نیست)
+========================================== */
+
+.runner-dom-ground{
+    position:absolute;
+    left:0; right:0;
+    bottom:20%;
+    height:2px;
+    background:rgba(201,169,255,.5);
+    box-shadow:0 12px 24px rgba(28,16,48,.9);
+}
+
+.runner-dom-ground::after{
+    content:"";
+    position:absolute;
+    left:0; right:0; top:2px; bottom:-200%;
+    background:#1c1030;
+}
+
+.runner-dom-char{
+    position:absolute;
+    bottom:20%;
+    width:36px;
+    height:76px;
+    transform-origin:50% 100%;
+    z-index:2;
+}
+
+.runner-dom-char-head{
+    position:absolute;
+    top:0; left:50%;
+    width:22px; height:22px;
+    margin-left:-11px;
+    border-radius:50%;
+    background:#F3C89E;
+}
+
+.runner-dom-char-hair{
+    position:absolute;
+    top:-4px; left:50%;
+    width:24px; height:14px;
+    margin-left:-12px;
+    border-radius:50% 50% 40% 40%;
+    background:var(--char-hair,#F59E0B);
+}
+
+.runner-dom-char-torso{
+    position:absolute;
+    top:20px; left:50%;
+    width:20px; height:26px;
+    margin-left:-10px;
+    border-radius:7px;
+    background:var(--char-outfit,#6366F1);
+}
+
+.runner-dom-char-leg{
+    position:absolute;
+    top:44px;
+    width:8px; height:26px;
+    border-radius:4px;
+    background:var(--char-outfit,#6366F1);
+    filter:brightness(.72);
+    transform-origin:50% 0%;
+}
+
+.runner-dom-char-leg-back{ left:10px; }
+.runner-dom-char-leg-front{ left:20px; filter:brightness(.95); }
+
+.runner-dom-char-running .runner-dom-char-leg-back{
+    animation:runnerDomLegSwing .5s ease-in-out infinite;
+}
+.runner-dom-char-running .runner-dom-char-leg-front{
+    animation:runnerDomLegSwing .5s ease-in-out infinite reverse;
+}
+
+@keyframes runnerDomLegSwing{
+    0%,100%{ transform:rotate(-22deg); }
+    50%{ transform:rotate(22deg); }
+}
+
+.runner-dom-char-air .runner-dom-char-leg-back{ transform:rotate(18deg); }
+.runner-dom-char-air .runner-dom-char-leg-front{ transform:rotate(-30deg); }
+
+.runner-dom-obstacle{
+    position:absolute;
+    bottom:20%;
+    font-size:1.9rem;
+    line-height:1;
+    transform:translateY(2px);
+    filter:drop-shadow(0 6px 8px rgba(0,0,0,.4));
+    z-index:1;
+}
+
+.runner-dom-obstacle-floating{
+    bottom:calc(20% + 46px);
+    animation:runnerDomFloat 1.6s ease-in-out infinite;
+}
+
+@keyframes runnerDomFloat{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-8px); }
 }
 
 .runner-tap-hint{
