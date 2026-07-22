@@ -6,7 +6,13 @@
 // M10 -> M11: همون فایل‌ها بازپردازش شدن (رد رنگ بنفش پاک شد،
 // برش‌ها تمیزتر شدن) - اسم فایل‌ها عوض نشده پس بدون بالا بردن
 // نسخه، کش قدیمی همون نسخه‌ی با رد بنفش رو سرو می‌کرد
-const CACHE_NAME = "love-os-v1-44-0-visuals-m11";
+// M11 -> M12: بازی «۷ قلب طلایی» به «قلب‌های کهکشانی» بازطراحی
+// شد (تمام‌صفحه + سبک فضایی)، pixi-game.js حذف شد
+// M12 -> M13: عکس‌های واقعی برای بازی «قلب‌های کهکشانی» جایگزین
+// ایموجی/CSS شدن + آیکون‌های کنار دکمه‌ی ماجراجویی بزرگ‌تر شدن
+// v1.45: اندازه‌ی قلب‌ها/شهاب‌سنگ‌ها/سبد تو بازی «قلب‌های
+// کهکشانی» بزرگ‌تر شد (فیزیک برخورد هم متناسب تنظیم شد)
+const CACHE_NAME = "love-os-v1-45-0-visuals";
 
 const APP_SHELL = [
     "./",
@@ -27,7 +33,6 @@ const APP_SHELL = [
     "js/gallery.js",
     "js/anniversary.js",
     "js/game.js",
-    "js/pixi-game.js",
     "js/runner.js",
     "js/ending.js",
     "manifest.json",
@@ -54,6 +59,16 @@ const APP_SHELL = [
     "assets/icons/ui/lock.png",
     "assets/icons/ui/heart.png",
     "assets/icons/ui/star.png",
+    "assets/images/space-bg.png",
+    "assets/icons/game/entity-heart.png",
+    "assets/icons/game/entity-star.png",
+    "assets/icons/game/entity-comet.png",
+    "assets/icons/game/entity-blackhole.png",
+    "assets/icons/game/player-collector.png",
+    "assets/icons/game/hud-heart.png",
+    "assets/icons/game/hud-star.png",
+    "assets/icons/game/hud-life.png",
+    "assets/icons/game/hud-timer.png",
     "assets/icons/ui/chat.png",
     "assets/icons/ui/slot-frame.png",
     "assets/sfx/click.wav",

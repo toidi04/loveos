@@ -1,12 +1,12 @@
 /*=========================================
-  GAME — "۷ قلب طلایی"
-  به مناسبت هفتمین ماهگرد.
-  باید ۷ قلب طلایی رو قبل از تموم شدن زمان
-  یا از دست دادن جون‌ها بگیری.
-  گل‌ها (🌸) امتیاز مثبت کوچیک می‌دن، اما
-  قلب‌های شکسته (💔) و خارها (🥀) یه جون
-  ازت می‌گیرن. هرچی امتیازت بیشتر بشه،
-  بازی سریع‌تر و هیجانی‌تر می‌شه.
+  GAME — «قلب‌های کهکشانی ✨»
+  تو یه شب پرستاره، قلبت (💜) بین ستاره‌ها
+  شناوره. باید ۷ تا «قلب کهکشانی» (💫) رو قبل
+  از تموم شدن زمان بگیری. ستاره‌های کوچیک (⭐)
+  امتیاز مثبت کم می‌دن، اما شهاب‌سنگ (☄️) و
+  حفره‌های سیاه (🌀) یه جون ازت می‌گیرن. هرچی
+  امتیازت بیشتر بشه، بازی سریع‌تر و هیجانی‌تر
+  می‌شه.
 =========================================*/
 
 const GAME_CONFIG = {
@@ -39,8 +39,9 @@ let gameState = null;
 let gameRAF = null;
 let gameSpawnTimer = null;
 let gameCountdownTimer = null;
+let gameHintTimer = null;
 
-// ---------- توابع مشترک بین نسخه‌ی DOM و Pixi ----------
+// ---------- توابع مشترک ----------
 
 function rollEntityType(){
 
@@ -60,7 +61,6 @@ function rollEntityType(){
 
 }
 
-// فاکتور سختی بین ۰ (شروع بازی) تا ۱ (حداکثر سختی)، بر اساس امتیاز فعلی
 function difficultyFactor(score){
 
     return Math.max(0, Math.min(1, score / GAME_CONFIG.scoreForMaxDifficulty));
@@ -81,17 +81,10 @@ function applyDifficulty(){
 
 }
 
-function entityGlyph(type){
-
-    if(type === "golden") return "💛";
-    if(type === "broken") return "💔";
-    if(type === "thorn")  return "🥀";
-
-    return "🌸";
-
-}
-
-// -------------------------------------------------------
+// نوع موجودیت‌ها: golden = قلب کهکشانی (هدف اصلی) | flower = ستاره‌ی
+// کوچیک (امتیاز جزئی) | broken = شهاب‌سنگ (خطر) | thorn = حفره‌ی
+// سیاه (خطر، تاب می‌خوره). گلیف/ظاهرشون الان با عکس واقعی (پس‌زمینه‌ی
+// CSS هر کلاس) مشخص می‌شه، نه ایموجی.
 
 function startGame(){
 
@@ -101,7 +94,7 @@ function startGame(){
 
     const screen = document.createElement("section");
 
-    screen.className = "screen game-screen fade-in";
+    screen.className = "screen game-screen space-game-screen fade-in";
 
     app.appendChild(screen);
 
@@ -115,19 +108,21 @@ function buildGameIntro(screen){
 
     screen.innerHTML = "";
 
+    buildStarfield(screen);
+
     const title = document.createElement("h1");
 
     title.className = "game-title";
 
-    title.textContent = "۷ قلب طلایی 💛";
+    title.textContent = "قلب‌های کهکشانی ✨";
 
     const desc = document.createElement("p");
 
     desc.className = "game-desc";
 
     desc.textContent =
-        "به مناسبت هفتمین ماهگردمون، " + GAME_CONFIG.goldenTarget +
-        " تا قلب طلایی رو قبل از تموم شدن زمان بگیر. گل‌ها 🌸 امتیاز اضافه می‌دن، ولی از قلب‌های شکسته 💔 و خارها 🥀 دوری کن — هرچی امتیازت بره بالا، بازی سریع‌تر می‌شه!";
+        GAME_CONFIG.goldenTarget +
+        " تا قلب کهکشانی 💫 رو قبل از تموم شدن زمان بگیر. ستاره‌های کوچیک ⭐ امتیاز اضافه می‌دن، ولی از شهاب‌سنگ ☄️ و حفره‌ی سیاه 🌀 دوری کن — هرچی امتیازت بره بالا، بازی سریع‌تر می‌شه!";
 
     const startBtn = document.createElement("button");
 
@@ -155,13 +150,47 @@ function buildGameIntro(screen){
 
 }
 
+// یه لایه‌ی نازک چشمک‌زن روی عکس پس‌زمینه‌ی واقعی (space-bg.png)
+// برای یه‌ذره جون بیشتر - خودِ صحنه‌ی اصلی رو دیگه عکس واقعی می‌سازه
+function buildStarfield(container){
+
+    const sky = document.createElement("div");
+
+    sky.className = "space-starfield";
+
+    const layerEl = document.createElement("div");
+
+    layerEl.className = "space-star-layer space-star-layer-1";
+
+    const count = 22;
+
+    let boxShadow = [];
+
+    for(let i=0;i<count;i++){
+
+        const x = Math.round(Math.random()*100);
+        const y = Math.round(Math.random()*100);
+
+        boxShadow.push(`${x}vw ${y}vh 0 rgba(255,255,255,${(0.4+Math.random()*0.5).toFixed(2)})`);
+
+    }
+
+    layerEl.style.boxShadow = boxShadow.join(",");
+
+    sky.appendChild(layerEl);
+
+    container.appendChild(sky);
+
+}
+
 function launchGame(screen){
 
     screen.innerHTML = "";
 
     screen.classList.add("game-active");
 
-    // HUD
+    buildStarfield(screen);
+
     const hud = document.createElement("div");
 
     hud.className = "game-hud";
@@ -170,13 +199,13 @@ function launchGame(screen){
 
     golden.className = "hud-golden";
 
-    golden.innerHTML = `💛 <span id="goldenCount">0</span>/${GAME_CONFIG.goldenTarget}`;
+    golden.innerHTML = `<img class="hud-icon" src="assets/icons/game/hud-heart.png" alt=""> <span id="goldenCount">0</span>/${GAME_CONFIG.goldenTarget}`;
 
     const score = document.createElement("div");
 
     score.className = "hud-score";
 
-    score.innerHTML = `⭐ <span id="hudScoreVal">0</span>`;
+    score.innerHTML = `<img class="hud-icon" src="assets/icons/game/hud-star.png" alt=""> <span id="hudScoreVal">0</span>`;
 
     const lives = document.createElement("div");
 
@@ -190,7 +219,7 @@ function launchGame(screen){
 
     timeEl.id = "hudTime";
 
-    timeEl.textContent = "⏱ " + GAME_CONFIG.duration;
+    timeEl.innerHTML = `<img class="hud-icon" src="assets/icons/game/hud-timer.png" alt=""> <span id="hudTimeVal">${GAME_CONFIG.duration}</span>`;
 
     hud.appendChild(golden);
 
@@ -200,7 +229,6 @@ function launchGame(screen){
 
     hud.appendChild(timeEl);
 
-    // Game area
     const area = document.createElement("div");
 
     area.className = "game-area";
@@ -213,13 +241,32 @@ function launchGame(screen){
 
     basket.id = "gameBasket";
 
-    basket.textContent = "💜";
+    basket.setAttribute("aria-label", "قلب تو");
 
     area.appendChild(basket);
+
+    // راهنمای کوتاه داخل بازی - خودکار محو می‌شه، ثابت نمی‌مونه
+    const hint = document.createElement("div");
+
+    hint.className = "in-game-hint";
+
+    hint.textContent = "با انگشتت قلب رو این‌ور اون‌ور کن ✨";
+
+    area.appendChild(hint);
 
     screen.appendChild(hud);
 
     screen.appendChild(area);
+
+    if(gameHintTimer) clearTimeout(gameHintTimer);
+
+    gameHintTimer = setTimeout(function(){
+
+        hint.classList.add("in-game-hint-hide");
+
+        setTimeout(function(){ hint.remove(); }, 500);
+
+    }, 2600);
 
     gameState = {
         golden: 0,
@@ -238,8 +285,7 @@ function launchGame(screen){
 
     renderLives();
 
-    // basket follows finger/mouse
-    const updateBasketX = (clientX)=>{
+    const updateBasketX = function(clientX){
 
         const rect = area.getBoundingClientRect();
 
@@ -247,7 +293,7 @@ function launchGame(screen){
 
         let x = clientX - rect.left;
 
-        x = Math.max(28, Math.min(rect.width-28, x));
+        x = Math.max(34, Math.min(rect.width-34, x));
 
         gameState.basketX = x;
 
@@ -255,13 +301,13 @@ function launchGame(screen){
 
     };
 
-    area.addEventListener("pointerdown", (e)=>{
+    area.addEventListener("pointerdown", function(e){
 
         updateBasketX(e.clientX);
 
     });
 
-    area.addEventListener("pointermove", (e)=>{
+    area.addEventListener("pointermove", function(e){
 
         if(e.buttons===1 || e.pointerType==="touch"){
 
@@ -271,8 +317,7 @@ function launchGame(screen){
 
     });
 
-    // مقدار اولیه‌ی سبد در وسط
-    requestAnimationFrame(()=>{
+    requestAnimationFrame(function(){
 
         const rect = area.getBoundingClientRect();
 
@@ -286,7 +331,6 @@ function launchGame(screen){
 
     });
 
-    // اسپان کردن قلب‌ها/گل‌ها/خارها
     function spawnLoop(){
 
         if(!gameState || !gameState.running) return;
@@ -301,14 +345,15 @@ function launchGame(screen){
 
     spawnLoop();
 
-    // شمارش معکوس زمان
-    gameCountdownTimer = setInterval(()=>{
+    gameCountdownTimer = setInterval(function(){
 
         if(!gameState || !gameState.running) return;
 
         gameState.timeLeft--;
 
-        timeEl.textContent = "⏱ " + gameState.timeLeft;
+        const timeVal = document.getElementById("hudTimeVal");
+
+        if(timeVal) timeVal.textContent = gameState.timeLeft;
 
         if(gameState.timeLeft <= 0){
 
@@ -336,11 +381,11 @@ function spawnHeart(area){
 
     el.className = "falling-heart " + type;
 
-    el.textContent = entityGlyph(type);
+    el.setAttribute("aria-hidden", "true");
 
     area.appendChild(el);
 
-    const x = 24 + Math.random()*(rect.width-48);
+    const x = 34 + Math.random()*(rect.width-68);
 
     const entity = {
         el, type,
@@ -369,15 +414,14 @@ function gameLoop(timestamp){
 
     gameState.lastFrame = timestamp;
 
-    const basketY = gameState.areaHeight - 54;
+    const basketY = gameState.areaHeight - 66;
 
-    gameState.entities.forEach(entity=>{
+    gameState.entities.forEach(function(entity){
 
         if(entity.caught) return;
 
         entity.y += gameState.fallSpeed * dt;
 
-        // خارها کمی چپ‌راست تاب می‌خورن تا فرار ازشون سخت‌تر باشه
         if(entity.type === "thorn"){
 
             entity.swayPhase += dt*3;
@@ -390,10 +434,9 @@ function gameLoop(timestamp){
 
         entity.el.style.top = entity.y + "px";
 
-        // برخورد با سبد
-        const withinX = Math.abs(entity.x - gameState.basketX) < 34;
+        const withinX = Math.abs(entity.x - gameState.basketX) < 46;
 
-        const withinY = entity.y > basketY - 20 && entity.y < basketY + 20;
+        const withinY = entity.y > basketY - 26 && entity.y < basketY + 26;
 
         if(withinX && withinY){
 
@@ -401,7 +444,7 @@ function gameLoop(timestamp){
 
         }else if(entity.y > gameState.areaHeight + 20){
 
-            entity.caught = true; // مصرف‌شده، فقط برای حذف
+            entity.caught = true;
 
             entity.el.remove();
 
@@ -409,13 +452,9 @@ function gameLoop(timestamp){
 
     });
 
-    // اگه وسط همین فریم بازی تموم شده باشه (مثلا با گرفتن آخرین
-    // قلب طلایی یا از دست دادن آخرین جون)، gameState پاک شده -
-    // دیگه ادامه نده، وگرنه به یه شیء null دسترسی پیدا می‌کنیم
     if(!gameState) return;
 
-    // موجودیت‌هایی که از صفحه حذف شدن (گرفته‌شده یا رد شده) از لیست پاک می‌شن
-    gameState.entities = gameState.entities.filter(e=>e.el.isConnected);
+    gameState.entities = gameState.entities.filter(function(e){ return e.el.isConnected; });
 
     if(gameState.running){
 
@@ -431,7 +470,7 @@ function catchHeart(entity){
 
     entity.el.classList.add("caught-pop");
 
-    setTimeout(()=>entity.el.remove(), 200);
+    setTimeout(function(){ entity.el.remove(); }, 200);
 
     if(entity.type === "golden"){
 
@@ -446,6 +485,8 @@ function catchHeart(entity){
         updateScoreHud();
 
         flashGameArea("gold");
+
+        spawnCatchBurst(entity.x, entity.y, true);
 
         const counter = document.getElementById("goldenCount");
 
@@ -487,7 +528,6 @@ function catchHeart(entity){
 
     }else{
 
-        // flower — امتیاز کوچیک مثبت
         gameState.score += GAME_CONFIG.flowerScore;
 
         applyDifficulty();
@@ -495,6 +535,43 @@ function catchHeart(entity){
         SFX.play("click", 0.35);
 
         updateScoreHud();
+
+        spawnCatchBurst(entity.x, entity.y, false);
+
+    }
+
+}
+
+// یه انفجار کوچیک از ذره‌های نور، خالص CSS/DOM (بدون نیاز به Canvas)
+function spawnCatchBurst(x, y, big){
+
+    const area = document.getElementById("gameArea");
+
+    if(!area) return;
+
+    const count = big ? 10 : 5;
+
+    for(let i=0;i<count;i++){
+
+        const p = document.createElement("div");
+
+        p.className = "catch-particle" + (big ? " catch-particle-gold" : "");
+
+        const angle = (Math.PI*2*i/count) + Math.random()*0.4;
+
+        const dist = 26 + Math.random()*(big?30:16);
+
+        p.style.left = x + "px";
+
+        p.style.top = y + "px";
+
+        p.style.setProperty("--px", Math.cos(angle)*dist + "px");
+
+        p.style.setProperty("--py", Math.sin(angle)*dist + "px");
+
+        area.appendChild(p);
+
+        setTimeout(function(){ p.remove(); }, 560);
 
     }
 
@@ -548,7 +625,9 @@ function renderLives(){
 
     for(let i=0;i<GAME_CONFIG.maxLives;i++){
 
-        html += i < gameState.lives ? "💜" : "🖤";
+        const lost = i >= gameState.lives;
+
+        html += `<img class="hud-icon hud-life-icon${lost ? " hud-life-lost" : ""}" src="assets/icons/game/hud-life.png" alt="">`;
 
     }
 
@@ -564,11 +643,15 @@ function stopGameTimers(){
 
     if(gameCountdownTimer) clearInterval(gameCountdownTimer);
 
+    if(gameHintTimer) clearTimeout(gameHintTimer);
+
     gameRAF = null;
 
     gameSpawnTimer = null;
 
     gameCountdownTimer = null;
+
+    gameHintTimer = null;
 
 }
 
@@ -592,6 +675,8 @@ function endGame(screen, won){
 
     screen.classList.remove("game-active");
 
+    buildStarfield(screen);
+
     if(won){
 
         SFX.play("success", 0.55);
@@ -600,13 +685,13 @@ function endGame(screen, won){
 
         title.className = "game-title";
 
-        title.textContent = "بردی! 💛💜";
+        title.textContent = "بردی! 💫💜";
 
         const msg = document.createElement("p");
 
         msg.className = "game-desc";
 
-        msg.textContent = `درست مثل این هفت ماه، هر قلبی که گرفتی یه خاطره‌ی خوب بود. امتیاز نهایی: ${finalScore} ⭐. ممنون که کنارمی.`;
+        msg.textContent = `هر قلب کهکشانی که گرفتی، مثل یه خاطره‌ی خوب تو آسمون موند. امتیاز نهایی: ${finalScore} ⭐. ممنون که کنارمی.`;
 
         const next = document.createElement("button");
 
@@ -634,7 +719,7 @@ function endGame(screen, won){
 
         msg.className = "game-desc";
 
-        msg.textContent = `${finalGolden} از ${GAME_CONFIG.goldenTarget} تا قلب طلایی رو گرفتی، با ${finalScore} امتیاز. یه بار دیگه امتحان کن؟`;
+        msg.textContent = `${finalGolden} از ${GAME_CONFIG.goldenTarget} تا قلب کهکشانی رو گرفتی، با ${finalScore} امتیاز. یه بار دیگه امتحان کن؟`;
 
         const retry = document.createElement("button");
 
